@@ -1,38 +1,102 @@
-
-import { client } from "../client";
+import { thirdwebClient } from "../thirdwebclient";
 import { ConnectButton } from "thirdweb/react";
-import { createWallet, injectedProvider } from "thirdweb/wallets";
+import { createWallet } from "thirdweb/wallets";
+import { useActiveAccount } from "thirdweb/react";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-const Header = () =>  {
+const Header = () => {
+  const activeAccount = useActiveAccount();
+  const [user, setUser] = useState(null);
+  const [imageError, setImageError] = useState(false);
+  const navigate = useNavigate();
 
-    // const wallet = inAppWallet({
-    //     auth: {
-    //       mode: "popup", // options are "popup" | "redirect" | "window";
-    //       options: ["farcaster"], // ex: ["discord", "farcaster", "apple", "facebook", "google", "passkey"],
-    //       passkeyDomain:"passkey", // for passkey, the domain that the passkey is created on
-    //       redirectUrl: "/", // the URL to redirect to after authentication
-    //     },
-    //   });
+  useEffect(() => {
+    async function fetchUser() {
+      if (!activeAccount?.address) return;
 
+      const address = activeAccount.address.toLowerCase();
 
-      const wallet = createWallet("io.metamask"); // pass the wallet id
+      const options = {
+        method: "GET",
+        headers: {
+          "x-api-key": "242C0032-6A56-43BF-911A-A02EBBEF2B52",
+          "x-neynar-experimental": "false",
+        },
+      };
 
+      try {
+        const res = await fetch(
+          `https://api.neynar.com/v2/farcaster/user/bulk-by-address?addresses=${address}`,
+          options
+        );
+        const data = await res.json();
+        const userData = data[address][0];
+        console.log(userData)
+        if (userData) {
+          setUser(userData);
+        } else {
+          console.warn("No user found for address", address);
+        }
+      } catch (err) {
+        console.error("Error fetching user:", err);
+      }
+    }
 
-    return (
-        <div className="flex justify-between mx-5 ">
-            <div className="flex items-center">
-            <img className="w-20 h-20" src="../../public/logo.png" />
-            <div>
-            <h2 className="text-white">StakeMe</h2>
-            <h2 className="text-white">v1.0</h2>
-            </div>
-            </div>
-            <div className="m-5">
-                <ConnectButton client={client} wallets={[wallet]}/>
-            </div>
-          
+    fetchUser();
+  }, [activeAccount?.address]);
+
+  const handleProfileClick = () => {
+    if (activeAccount?.address) {
+      navigate(`/profile/${activeAccount.address}`, { state: user });
+    } else {
+      alert("Connect your wallet first");
+    }
+  };
+
+  const wallet = createWallet("io.metamask");
+
+  return (
+    <div className="flex justify-between mx-5 items-center py-4">
+      <div className="flex items-center space-x-3">
+        <img className="w-16 h-16" src="/logo.png" alt="StakeMe Logo" />
+        <div>
+          <h2 className="text-white font-bold text-xl">StakeMe</h2>
+          <h2 className="text-white text-sm">v1.0</h2>
         </div>
-    )
-}
+      </div>
+
+      <div>
+        {user ? (
+          <button
+            onClick={handleProfileClick}
+            className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-lg flex items-center justify-center text-white text-lg font-bold cursor-pointer"
+            style={{
+              background: user.pfp_url && !imageError
+                ? `url(${user.pfp_url}) center/cover no-repeat`
+                : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            }}
+          >
+            {!user.pfp_url || imageError
+              ? user.display_name?.charAt(0).toUpperCase() || "?"
+              : null}
+            <img
+              src={user.pfp_url}
+              alt="pfp"
+              className="hidden"
+              onError={() => setImageError(true)}
+            />
+          </button>
+        ) : (
+          <div className="w-12 h-12 rounded-full bg-gray-600 animate-pulse" />
+        )}
+      </div>
+
+      <div className="m-5">
+        <ConnectButton client={thirdwebClient} wallets={[wallet]} />
+      </div>
+    </div>
+  );
+};
 
 export default Header;

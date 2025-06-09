@@ -1,13 +1,31 @@
 import { useState } from 'react'
 import './App.css'
 import Layout from './Layout'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+
+import Profile from './components/Profile';
+import Home from './components/Home';
 
 function App() {
 
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Layout />,
+      errorElement: <div>404 Not found</div>,
+      children:[
+        {path: "", element: <Home />,
+          errorElement: <div>Page Not found</div>
+        },
+        {path: `profile/:address`, element: <Profile />,
+          errorElement: <div>Page Not found</div>
+        }
+      ]
+    }
+  ])
+
   return (
-    <>
-   <Layout />
-    </>
+    <RouterProvider router={router} />
   )
 }
 
