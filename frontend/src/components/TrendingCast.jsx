@@ -48,7 +48,7 @@ export default function TrendingCast(){
 
 
     return(
-<div className="p-4 pb-8 mt-10 bg-[#141414] mx-5 w-2/5 rounded-2xl h-auto">
+<div className="p-4 pb-8 mt-10 bg-gradient-to-br from-[#141414] via-[#0f0f0f] to-[#1a1a1a] mx-5 w-2/5 rounded-2xl h-auto border border-[#2a2a2a]">
   <div className="flex items-center justify-between">
     <h2 className="text-2xl ml-4 font-semibold text-gray-200">Trending Feeds</h2>
     {/* Optional: remove left/right scroll buttons if not needed */}
