@@ -24,7 +24,7 @@ export default function HowItWorksSection() {
         </div>
 
         {/* Step 2 */}
-        <div className="bg-black hover:bg-[#292929] transition-all duration-300 p-6 rounded-2xl border border-[#333] shadow-md hover:scale-105">
+        <div className="bg-black  transition-all duration-300 p-6 rounded-2xl border border-[#333] shadow-md hover:scale-105">
           <Lottie animationData={mintAnim} loop={true} className="h-36 mx-auto mb-4" />
           <h3 className="text-xl font-bold text-purple-400 mb-2">Launch Your Token</h3>
           <p className="text-sm text-gray-400">
@@ -33,7 +33,7 @@ export default function HowItWorksSection() {
         </div>
 
         {/* Step 3 */}
-        <div className="bg-black hover:bg-[#292929] transition-all duration-300 p-6 rounded-2xl border border-[#333] shadow-md hover:scale-105">
+        <div className="bg-black  transition-all duration-300 p-6 rounded-2xl border border-[#333] shadow-md hover:scale-105">
           <Lottie animationData={shareAnim} loop={true} className="h-36 mx-auto mb-4" />
           <h3 className="text-xl font-bold text-blue-400 mb-2">Share & Earn</h3>
           <p className="text-sm text-gray-400">
