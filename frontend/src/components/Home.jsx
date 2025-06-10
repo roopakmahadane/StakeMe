@@ -1,7 +1,13 @@
+import TrendingCast from "./TrendingCast"
+
+
 export default function Home(){
+
+
+
     return (
         <div>
-            <h1 className="text-white">Home Page</h1>
+            <TrendingCast />
         </div>
     )
 }
