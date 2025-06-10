@@ -61,8 +61,8 @@ const Header = () => {
       <div className="flex items-center space-x-3">
         <img className="w-16 h-16" src="/logo.png" alt="StakeMe Logo" />
         <div>
-          <h2 className="text-white font-bold text-xl">StakeMe</h2>
-          <h2 className="text-white text-sm">v1.0</h2>
+          <h2 className="bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text tracking-wide font-bold text-xl">StakeMe</h2>
+          <h2 className="bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text tracking-wide text-sm">v1.0</h2>
         </div>
       </div>
 
