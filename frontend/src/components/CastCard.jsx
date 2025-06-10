@@ -20,10 +20,21 @@ export default function CastCard({cast}){
       replies: cast.replies || {},
     };
   
-    const date = new Date(timestamp).toLocaleDateString('en-US', {
+    const dateObj = new Date(timestamp);
+
+    const time = dateObj.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    });
+    
+    const date = dateObj.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
     });
+    
+    const timeDate = `${time} · ${date}`;
+
   
     return (
       <div className=" mx-6 my-2 max-w-md  p-4 rounded-2xl shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
@@ -47,7 +58,7 @@ export default function CastCard({cast}){
           <div>❤️ {reactions.likes_count || 0}</div>
           <div>♻️ {reactions.recasts_count || 0}</div>
           <div>💬 {replies.count || 0}</div>
-          <div>{date}</div>
+          <div>{timeDate}</div>
         </div>
       </div>
     );

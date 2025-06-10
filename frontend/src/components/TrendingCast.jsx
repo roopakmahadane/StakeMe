@@ -48,7 +48,7 @@ export default function TrendingCast(){
 
 
     return(
-<div className="p-4 pb-8 mt-10 bg-[#141414] mx-20 w-2/5 rounded-2xl h-auto">
+<div className="p-4 pb-8 mt-10 bg-[#141414] mx-5 w-2/5 rounded-2xl h-auto">
   <div className="flex items-center justify-between">
     <h2 className="text-2xl ml-4 font-semibold text-gray-200">Trending Feeds</h2>
     {/* Optional: remove left/right scroll buttons if not needed */}
@@ -56,7 +56,7 @@ export default function TrendingCast(){
 
   <div className="relative mt-4">
     <div
-      className="flex flex-col space-y-4 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 pr-2"
+      className="flex flex-col space-y-4 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 pr-2 scrollbar-hidden"
     >
       {topCasts.map((topCast, i) => (
         <div key={i} className="h-auto">
