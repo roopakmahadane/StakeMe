@@ -8,154 +8,132 @@ const { ethers } = require("hardhat");
 
 describe("CreateFactory", function () {
   async function deployERC20Factory() {
-    const CreatorFactory = await ethers.getContractFactory("CreatorFactory");
-    const creatorFactory = await CreatorFactory.deploy();
+    const [deployer, backendSigner] = await ethers.getSigners();
+    const deployerAddress = await deployer.getAddress();
+    const backendSignerAddress = await backendSigner.getAddress();
 
-    return { creatorFactory };
+    const CreatorFactory = await ethers.getContractFactory("CreatorFactory");
+    const creatorFactory = await CreatorFactory.deploy(backendSignerAddress);
+
+    await creatorFactory.waitForDeployment();
+
+    return { creatorFactory,backendSigner, backendSignerAddress,deployer, deployerAddress };
   }
 
   describe("Should deploy a new creator token", function () {
-    it("Should deploy a new creator token", async function () {
+
+    it("should set backendSigner correctly", async function(){
       const deployFactory = await deployERC20Factory();
-      const { creatorFactory } = deployFactory;
-      const tokensLengthBefore = await creatorFactory.allTokens();
+      const { creatorFactory, backendSignerAddress } = deployFactory;
+      expect(await creatorFactory.backendSigner()).to.equal(backendSignerAddress);
 
-
-       const tx = await creatorFactory.createToken("RoopakToken", "RPK", 100);
-       await tx.wait();
-
-       const tokensLengthAfter = await creatorFactory.allTokens();
-
-
-       expect(tokensLengthAfter.length).to.greaterThan(tokensLengthBefore.length);
-
-    });
-    it("Should able to deploy multiple token by same creator", async function () {
-      const deployFactory = await deployERC20Factory();
-      const { creatorFactory } = deployFactory;
-      const tokensLengthBefore = await creatorFactory.allTokens();
-
-       const tx1 = await creatorFactory.createToken("RoopakToken1", "RPK1", 100);
-       await tx1.wait();
-
-       const tx2 = await creatorFactory.createToken("RoopakToken2", "RPK2", 100);
-       await tx2.wait();
-
-       const tokensLengthAfter = await creatorFactory.allTokens();
-
-       expect(tokensLengthAfter.length).to.equal(2);
-
-    });
-    it("tokenByCreator[creator] should correctly lists tokens created by the caller", async function () {
-      const deployFactory = await deployERC20Factory();
-      const { creatorFactory } = deployFactory;
-      const [account1, account2] = await ethers.getSigners();
-
-      const account1Address = account1.getAddress();
-      const account2Address = account2.getAddress();
-
-       const tx1 = await creatorFactory.connect(account1).createToken("Test1", "T1", 100);
-       await tx1.wait();
-
-       const tx2 = await creatorFactory.connect(account1).createToken("Test2", "T2", 100);
-       await tx2.wait();
-
-       const tx3 = await creatorFactory.connect(account2).createToken("Test3", "T3", 100);
-       await tx3.wait();
-
-      const getTokensByAccount1 = await creatorFactory.getTokensByCreator(account1Address);
-      const getTokensByAccount2 = await creatorFactory.getTokensByCreator(account2Address);
-
-      console.log(getTokensByAccount2.length);
-
-       expect(getTokensByAccount1.length).to.equal(2);
-       expect(getTokensByAccount2.length).to.equal(1);
-
-    });
-    it("tokenMetadata[tokenAddress] should contain the correct name and symbol.", async function () {
-      const deployFactory = await deployERC20Factory();
-      const { creatorFactory } = deployFactory;
-   
-
-       const tx1 = await creatorFactory.createToken("Test1", "T1", 100);
-       await tx1.wait();
-
-       const tokensAddress = await creatorFactory.allTokens();
-       console.log('token address', tokensAddress[0]);
-
-       const tokenMetaData = await creatorFactory.tokenMetadata(tokensAddress[0]);
-        console.log("tokenMetaData",tokenMetaData );
-
-        expect(tokenMetaData.name).to.equal("Test1");
-        expect(tokenMetaData.symbol).to.equal("T1");
-        expect(tokenMetaData.tokenAddress).to.equal(tokensAddress[0]);
-        
-
-    });
-    it("should emit an event on successful token creation", async function(){
-      const { creatorFactory } = await loadFixture(deployERC20Factory);
-
-      await expect(creatorFactory.createToken("Test1", "T1", 100))
-      .to.emit(creatorFactory, "tokenDeployed")
-      .withArgs(anyValue, anyValue, "Test1", "T1" );
     })
-    it("should limit the token by a particular creator to 5", async function(){
+
+    it("Creator token array should be empty", async function(){
       const { creatorFactory } = await loadFixture(deployERC20Factory);
+      const tokenArray = await creatorFactory.allTokens()
+      expect(tokenArray.length).to.equal(0);
+    })
 
-      for (let i = 0; i < 5; i++) {
-        await creatorFactory.createToken(`Token${i}`, `TK${i}`, 100);
-      }
+    it("should deploy token with valid input", async function(){
+      const { creatorFactory } = await loadFixture(deployERC20Factory);
+      const tx = await creatorFactory.createToken("RoopakToken", "RPK");
+      await tx.wait();
+      const tokenArray = await creatorFactory.allTokens()
+      const tokenAddress = tokenArray[0];
+      const tokenMetaData = await creatorFactory.tokenMetadata(tokenAddress);
+       expect(tokenMetaData.name).to.equal("RoopakToken");
+      expect(tokenMetaData.symbol).to.equal("RPK");
+    })
 
-      const tokens = await creatorFactory.allTokens();
-      console.log("token length",tokens.length );
-      expect(tokens.length).to.equal(5);
+    it("should emit an event on successful token creation", async function(){
+          const { creatorFactory } = await loadFixture(deployERC20Factory);
+    
+          await expect(creatorFactory.createToken("Test1", "T1"))
+          .to.emit(creatorFactory, "tokenDeployed")
+          .withArgs(anyValue, anyValue, "Test1", "T1" );
+        })
 
+    it("tokenByCreator[creator] should correctly list tokens created by the caller", async function () {
+      const deployFactory = await deployERC20Factory();
+      const { creatorFactory } = deployFactory;
+      const [account] = await ethers.getSigners();
+      const accountAddress = await account.getAddress();
+       const tx = await creatorFactory.connect(account).createToken("Test1", "T1");
+       await tx.wait();
+      const tokenMetaData = await creatorFactory.getTokenByCreator(accountAddress);
+       expect(tokenMetaData.name).to.equal("Test1");
+       expect(tokenMetaData.symbol).to.equal("T1");
 
-      await expect(creatorFactory.createToken("Test6", "T6", 100))
-      .revertedWith("Token creation limit reached");
+    });
+ 
+    it("should revert back if same profile creates another token", async function(){
+      const deployFactory = await deployERC20Factory();
+      const { creatorFactory } = deployFactory;
+
+      const tx = await creatorFactory.createToken("Test1", "T1");
+      
+      await expect(creatorFactory.createToken("Test1", "T2"))
+      .revertedWith("Token already created");
     })
 
     it("should revert back if same token name is used", async function(){
       const deployFactory = await deployERC20Factory();
       const { creatorFactory } = deployFactory;
+      const[signer1, signer2] = await ethers.getSigners();
 
-      const tx = await creatorFactory.createToken("Test1", "T1", 100);
+      const tx = await creatorFactory.connect(signer1).createToken("Test1", "T1");
       
-      await expect(creatorFactory.createToken("Test1", "T2", 100))
+      await expect(creatorFactory.connect(signer2).createToken("Test1", "T2"))
       .revertedWith("Token name already used");
     })
 
     it("should revert back if same token symbol is used", async function(){
       const deployFactory = await deployERC20Factory();
       const { creatorFactory } = deployFactory;
+      const[signer1, signer2] = await ethers.getSigners();
 
-      const tx = await creatorFactory.createToken("Test1", "T2", 100);
+      const tx = await creatorFactory.connect(signer1).createToken("Test1", "T1");
       
-      await expect(creatorFactory.createToken("Test2", "T2", 100))
+      await expect(creatorFactory.connect(signer2).createToken("Test2", "T1"))
       .revertedWith("Token symbol already used");
     })
 
-   
-  });
-
-  describe("should revert back if token data not provided", function(){
     it("should revert back if name of token not provided", async function(){
       const { creatorFactory } = await loadFixture(deployERC20Factory);
 
-      await expect(creatorFactory.createToken("", "T1", 100)).revertedWith("Token name cannot be empty");
+      await expect(creatorFactory.createToken("", "T1")).revertedWith("Token name cannot be empty");
     })
     it("should revert back if symbol of token not provided", async function(){
       const { creatorFactory } = await loadFixture(deployERC20Factory);
 
-      await expect(creatorFactory.createToken("Test", "", 100)).revertedWith("Token symbol cannot be empty");
+      await expect(creatorFactory.createToken("Test", "")).revertedWith("Token symbol cannot be empty");
     })
-    it("should revert back if intial supply not provided", async function(){
+    it("Token name/symbol uniqueness should be case-sensitive",async function(){
       const { creatorFactory } = await loadFixture(deployERC20Factory);
+      const[signer1, signer2] = await ethers.getSigners();
 
-      await expect(creatorFactory.createToken("Test", "T1", 0)).revertedWith("Initial supply cannot be empty");
+      const tx1= await creatorFactory.connect(signer1).createToken("Roopak", "T1");
+      const tx2= await creatorFactory.connect(signer2).createToken("roopak", "t1");
+
+      const tokenArray = await creatorFactory.allTokens()
+      expect(tokenArray.length).to.equal(2);
+
     })
+    it("allTokens() should return all deployed token addresses",async function(){
+      const { creatorFactory } = await loadFixture(deployERC20Factory);
+      const[signer1, signer2] = await ethers.getSigners();
+
+      const tx1= await creatorFactory.connect(signer1).createToken("Roopak", "T1");
+      const tx2= await creatorFactory.connect(signer2).createToken("roopak", "t1");
+
+      const tokenArray = await creatorFactory.allTokens()
+      expect(tokenArray.length).to.equal(2);
+
+    })
+  
   })
 
-  
- 
+
 });
+

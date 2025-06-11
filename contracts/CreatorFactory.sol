@@ -14,7 +14,7 @@ contract CreatorFactory {
         string symbol;
     }
 
-    mapping(address => address[]) tokenByCreator;
+   mapping(address => address) public tokenByCreator;
     mapping(address => TokenData) public tokenMetadata;
     mapping(string => bool) private usedNames;
     mapping(string => bool) private usedSymbols;
@@ -28,7 +28,7 @@ contract CreatorFactory {
     function createToken(string memory _name, string memory _symbol) external {
         require(bytes(_name).length > 0, "Token name cannot be empty");
         require(bytes(_symbol).length > 0, "Token symbol cannot be empty");
-        require(tokenByCreator[msg.sender].length < MAX_TOKENS_PER_USER, "Token creation limit reached");
+       require(tokenByCreator[msg.sender] == address(0), "Token already created");
         require(!usedNames[_name], "Token name already used");
         require(!usedSymbols[_symbol], "Token symbol already used");
 
@@ -38,7 +38,7 @@ contract CreatorFactory {
         usedNames[_name] = true;
         usedSymbols[_symbol] = true;
         creatorTokens.push(tokenAddress);
-        tokenByCreator[msg.sender].push(tokenAddress);
+        tokenByCreator[msg.sender] = tokenAddress;
         tokenMetadata[tokenAddress] = TokenData(tokenAddress, _name, _symbol);
 
         emit tokenDeployed(msg.sender, tokenAddress, _name, _symbol);
@@ -48,12 +48,9 @@ contract CreatorFactory {
         return creatorTokens;
     }
 
-    function getTokensByCreator(address creator) public view returns (TokenData[] memory) {
-        address[] memory tokens = tokenByCreator[creator];
-        TokenData[] memory allTokenData = new TokenData[](tokens.length);
-        for (uint i = 0; i < tokens.length; i++) {
-            allTokenData[i] = tokenMetadata[tokens[i]];
-        }
-        return allTokenData;
-    }
+  function getTokenByCreator(address creator) public view returns (TokenData memory) {
+    address tokenAddr = tokenByCreator[creator];
+    require(tokenAddr != address(0), "No token found for creator");
+    return tokenMetadata[tokenAddr];
+}
 }
