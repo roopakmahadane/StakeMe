@@ -44,6 +44,7 @@ describe("CreateFactory", function () {
       const tokenMetaData = await creatorFactory.tokenMetadata(tokenAddress);
        expect(tokenMetaData.name).to.equal("RoopakToken");
       expect(tokenMetaData.symbol).to.equal("RPK");
+      expect(tokenMetaData.tokenAddress).to.equal(tokenAddress);
     })
 
     it("should emit an event on successful token creation", async function(){
@@ -131,6 +132,24 @@ describe("CreateFactory", function () {
       expect(tokenArray.length).to.equal(2);
 
     })
+
+    it("deployed token should have valid ERC20 properties", async function () {
+      const { creatorFactory } = await loadFixture(deployERC20Factory);
+      await creatorFactory.createToken("TestToken", "TT");
+    
+      const tokenAddress = (await creatorFactory.allTokens())[0];
+      const CreatorToken = await ethers.getContractAt("CreatorToken", tokenAddress);
+      expect(await CreatorToken.name()).to.equal("TestToken");
+      expect(await CreatorToken.symbol()).to.equal("TT");
+      expect(await CreatorToken.totalSupply()).to.equal(0);
+    });
+    it("should revert if getTokenByCreator is called with no token", async function () {
+      const { creatorFactory } = await loadFixture(deployERC20Factory);
+      const [signer] = await ethers.getSigners();
+      await expect(creatorFactory.getTokenByCreator(signer.address))
+        .to.be.revertedWith("No token found for creator");
+    });
+    
   
   })
 
