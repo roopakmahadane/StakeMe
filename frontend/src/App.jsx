@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import Layout from './Layout'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Form from './components/Form'
 
 import Profile from './components/Profile';
 import Home from './components/Home';
@@ -18,6 +19,9 @@ function App() {
           errorElement: <div>Page Not found</div>
         },
         {path: `profile/:address`, element: <Profile />,
+          errorElement: <div>Page Not found</div>
+        },
+        {path: "createToken", element: <Form />,
           errorElement: <div>Page Not found</div>
         }
       ]
