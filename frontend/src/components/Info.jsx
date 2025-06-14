@@ -2,6 +2,7 @@ import Lottie from "lottie-react";
 import connectAnim from "../lotties/connect.json";
 import mintAnim from "../lotties/mint.json";
 import shareAnim from "../lotties/share.json";
+import { Link } from "react-router-dom";
 
 export default function HowItWorksSection() {
   return (
@@ -42,14 +43,14 @@ export default function HowItWorksSection() {
         </div>
       </div>
       <div className="mt-12 flex justify-center">
+        <Link to={"/createToken"}>
   <button className="relative px-8 py-3 font-semibold text-white text-lg rounded-xl bg-gradient-to-r 
     from-purple-600 to-pink-600 shadow-md transition-all duration-300 ease-in-out
     hover:from-pink-600 hover:to-purple-600 hover:shadow-pink-400/40 hover:scale-105 cursor-pointer">
-
     <span className="absolute inset-0 rounded-xl opacity-20 blur-sm bg-pink-500 animate-pulse pointer-events-none"></span>
-
     <span className="relative z-10">🚀 Launch Now</span>
   </button>
+  </Link>
 </div>
 
     </div>

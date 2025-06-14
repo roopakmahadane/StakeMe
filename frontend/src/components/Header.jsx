@@ -2,7 +2,7 @@ import { thirdwebClient } from "../thirdwebclient";
 import { ConnectButton } from "thirdweb/react";
 import { createWallet } from "thirdweb/wallets";
 import { useActiveAccount } from "thirdweb/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 const Header = () => {
@@ -61,8 +61,10 @@ const Header = () => {
       <div className="flex items-center space-x-3">
         <img className="w-16 h-16" src="/logo.png" alt="StakeMe Logo" />
         <div>
+          <Link to={"/"}>
           <h2 className="bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text tracking-wide font-bold text-xl">StakeMe</h2>
           <h2 className="bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text tracking-wide text-sm">v1.0</h2>
+          </Link>
         </div>
       </div>
 
