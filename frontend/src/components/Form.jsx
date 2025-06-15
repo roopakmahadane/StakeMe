@@ -2,6 +2,7 @@ import { calculateCreatorTokenPrice } from "../utils/calculateTokenPrice"
 import { useState } from "react"
 import launch from '../lotties/launch.json'
 import Lottie from "lottie-react";
+import StarLayer from "./StarLayer";
 
 
 export default function Form(){
@@ -10,16 +11,17 @@ const [tokenSymbol, setSymbol] = useState("");
 
     return(
         <div className="flex items-center justify-center mt-20 ">
+                  <StarLayer />
             <Lottie animationData={launch} loop={true} className="h-90 mx-30 mb-4" />
        <div className="flex flex-col items-center gap-6 p-6 bg-gradient-to-r from-pink-500 to-purple-600 w-2/6 rounded-2xl mr-40 bg-opacity-30 backdrop-blur-md">
-        <h1 className="text-3xl">Create your Token</h1>
+        <h1 className="text-3xl font-bold">Launch your Token</h1>
         <form className="flex flex-col gap-4 w-full max-w-md ">
             <div className="flex flex-col p-5">
-                <label className="text-2xl" for ="token-name">Name</label>
+                <label className="text-2xl font-bold" for ="token-name">Name</label>
                 <input value={tokenName} placeholder="Token Name" onChange={e => setTokenName(e.target.value)} type="text" id="token-name" className="bg-white text-black w-full rounded-lg p-2 mt-1"/>
             </div>
             <div className="flex flex-col p-5">
-                <label className="text-2xl" for ="token-symbol">Symbol</label>
+                <label className="text-2xl font-bold" for ="token-symbol">Symbol</label>
                 <input value={tokenSymbol}  placeholder="Symbol" onChange={e => setSymbol(e.target.value)} type="text" id="token-symbol" className="bg-white text-black w-full rounded-lg p-2 mt-1"/>
             </div>
             <div className="flex items-center justify-center">

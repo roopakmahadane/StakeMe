@@ -8,3 +8,12 @@
     display: none; /* Chrome, Safari, Edge */
   }
   
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    80% { opacity: 1; }
+  }
+  
+  .twinkle {
+    animation: twinkle 8s ease-in-out infinite;
+  }
