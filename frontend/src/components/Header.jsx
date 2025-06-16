@@ -5,11 +5,13 @@ import { useActiveAccount } from "thirdweb/react";
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
+
 const Header = () => {
   const activeAccount = useActiveAccount();
   const [user, setUser] = useState(null);
   const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
+
 
   useEffect(() => {
     async function fetchUser() {
@@ -31,14 +33,16 @@ const Header = () => {
           options
         );
         const data = await res.json();
+        
         const userData = data[address][0];
-        console.log(userData)
         if (userData) {
           setUser(userData);
         } else {
+          setUser(null);
           console.warn("No user found for address", address);
         }
       } catch (err) {
+        setUser(null);
         console.error("Error fetching user:", err);
       }
     }
@@ -48,7 +52,7 @@ const Header = () => {
 
   const handleProfileClick = () => {
     if (activeAccount?.address) {
-      navigate(`/profile/${activeAccount.address}`, { state: user });
+      navigate("/profile");
     } else {
       alert("Connect your wallet first");
     }
@@ -73,7 +77,7 @@ const Header = () => {
         {user ? (
           <button
             onClick={handleProfileClick}
-            className="w-12 h-12 rounded-[40%] overflow-hidden border-2 border-white shadow-lg flex items-center justify-center text-white text-lg font-bold cursor-pointer"
+            className="w-12 h-12 rounded-[40%] overflow-hidden border-2 border-white shadow-lg flex items-center justify-center text-white text-lg font-bold cursor-pointer "
             style={{
               background: user.pfp_url && !imageError
                 ? `url(${user.pfp_url}) center/cover no-repeat`

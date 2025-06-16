@@ -1,12 +1,15 @@
 export function calculateCreatorTokenPrice({
-    growthScore,     // 0 to 1, Neynar score
-    supply,
-    basePrice = 0.01,
-    scoreExponent = 2.5,        // NEW: flattens mid scores
-    supplyExponent = 1.2
-  }) {
-    const adjustedScore = Math.pow(growthScore, scoreExponent);
-    const price = basePrice * adjustedScore * Math.pow(supply, supplyExponent);
-    return Number(price.toFixed(2));
-  }
-  
+  growthScore,
+  supply,
+  basePriceUSD = 0.01,       // Base price per token in USD
+  scoreExponent = 2.5,
+  supplyExponent = 1.2,
+  minPriceUSD = 0.005,       // Optional floor price
+}) {
+  const adjustedScore = Math.pow(growthScore, scoreExponent);
+  const supplyFactor = Math.pow(supply + 1, supplyExponent); // +1 to avoid zero
+  const rawPriceUSD = basePriceUSD * adjustedScore * supplyFactor;
+
+  const finalPriceUSD = Math.max(rawPriceUSD, minPriceUSD);
+  return Number(finalPriceUSD.toFixed(4)); // USD/token
+}

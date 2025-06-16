@@ -18,7 +18,7 @@ function App() {
         {path: "", element: <Home />,
           errorElement: <div>Page Not found</div>
         },
-        {path: `profile/:address`, element: <Profile />,
+        {path: "profile", element: <Profile />,
           errorElement: <div>Page Not found</div>
         },
         {path: "createToken", element: <Form />,
