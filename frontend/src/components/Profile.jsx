@@ -7,6 +7,8 @@ import UserCastCard from './UserCastCard.jsx'
 import {calculateCreatorTokenPrice} from '../utils/calculateTokenPrice.js'
 import { useActiveAccount } from "thirdweb/react";
 import CastCardLoader from "./CastCardLoader";
+import {MdChevronLeft} from 'react-icons/md';
+import {MdChevronRight} from 'react-icons/md';
 
 export default function Profile(){
    
@@ -18,9 +20,7 @@ export default function Profile(){
     const [casts, setCasts] = useState([]);
     const [tokenPrice, setTokenPrice] = useState(0);
 
-    useEffect(() => {
-      console.log("activeAccount in Profile:", activeAccount?.address);
-    }, [activeAccount?.address]);
+
 
 
     useEffect(() => {
@@ -33,7 +33,7 @@ export default function Profile(){
         const options = {
           method: "GET",
           headers: {
-            "x-api-key": "242C0032-6A56-43BF-911A-A02EBBEF2B52",
+            "x-api-key":import.meta.env.VITE_NEYNAR_API_KEY,
             "x-neynar-experimental": "false",
           },
         };
@@ -94,7 +94,7 @@ export default function Profile(){
       async function fetchUserCasts(){
         const options = {
           method: 'GET',
-          headers: {'x-api-key': "242C0032-6A56-43BF-911A-A02EBBEF2B52", 'x-neynar-experimental': 'false'}
+          headers: {'x-api-key': import.meta.env.VITE_NEYNAR_API_KEY, 'x-neynar-experimental': 'false'}
         };
   
         try {
@@ -172,57 +172,77 @@ export default function Profile(){
       );
     }
 
+    const sideLeft = () => {
+      let slider = document.getElementById('slider');
+      slider.scrollLeft = slider.scrollLeft - 700;
+    }
+  
+    const sideRight = () => {
+      let slider = document.getElementById('slider');
+      slider.scrollLeft = slider.scrollLeft + 700;
+    }
+
 
  return (
-  <div className="flex flex-col md:flex-row w-full max-w-6xl mx-auto px-4 py-6 gap-8">
-  {/* Left section: Profile and Casts */}
-  <div className="flex-1">
-    {/* Profile Section */}
-    <div className="flex flex-col md:flex-row items-center gap-6">
-      <img
+  <div className="w-full max-w-7xl mx-auto px-4 py-6 flex flex-col gap-10">
+  {/* Profile Section */}
+  <div className="flex flex-col lg:flex-row gap-8 justify-center items-center">
+  <img
         src={user.pfp_url}
         alt="Profile"
-        className="w-32 h-32 rounded-full shadow-md object-cover object-center"
+        className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover shadow-md"
       />
-      <div className="text-center md:text-left">
-        <h1 className="text-2xl font-semibold">{user.display_name}</h1>
-        <p className="text-gray-500">@{user.username}</p>
-        <div className="mt-4 grid grid-cols-3 gap-4">
-          <div className="rounded-lg shadow-sm px-3">
-            <h2 className="font-semibold">Followers</h2>
-            <p>{user.follower_count}</p>
-          </div>
-          <div className="rounded-lg shadow-sm px-3">
-            <h2 className="font-semibold">Following</h2>
-            <p>{user.following_count}</p>
-          </div>
-          <div className="rounded-lg shadow-sm px-3">
-            <h2 className="font-semibold">Score</h2>
-            <p>{user.score}</p>
-          </div>
+    {/* User Info */}
+    <div className="flex flex-col items-center lg:items-start gap-6">
+      
+      <div className="text-center lg:text-left">
+        <h1 className="text-xl md:text-2xl font-semibold">{user.display_name}</h1>
+        <p className="text-gray-400">@{user.username}</p>
+        <div className="mt-4 grid grid-cols-3 gap-4 text-sm md:text-base">
+          <div><h2 className="font-semibold">Followers</h2><p>{user.follower_count}</p></div>
+          <div><h2 className="font-semibold">Following</h2><p>{user.following_count}</p></div>
+          <div><h2 className="font-semibold">Score</h2><p>{user.score}</p></div>
         </div>
         <p className="mt-4 italic">{user.profile.bio.text}</p>
       </div>
     </div>
 
-    {/* Casts Section */}
-    <div className="mt-10">
-      <h2 className="text-2xl font-extrabold mb-4">Your casts</h2>
-      {casts.length > 0 ? (
-        casts.map((cast, i) => (
-          <div key={i} className="h-auto">
-            <UserCastCard cast={cast} />
-          </div>
-        ))
-      ) : (
-        <p>No casts to display</p>
-      )}
+    {/* Token Card */}
+    <div className="w-full max-w-sm">
+      <TokenCard available={tokenAvailable} tokenData={tokenData} tokenPrice={tokenPrice} />
     </div>
   </div>
 
-  {/* Right section: Token Card */}
-  <div className="w-full md:w-1/3">
-    <TokenCard available={tokenAvailable} tokenData={tokenData} tokenPrice={tokenPrice}/>
+  {/* Cast Section */}
+  <div className="bg-[#141414] rounded-2xl p-4">
+    <div className="flex items-center justify-between">
+      <h2 className="text-2xl font-semibold text-white">Cast</h2>
+      <div className="flex">
+        <div className="bg-[#272727] m-1 rounded-md hover:bg-gray-800">
+          <MdChevronLeft onClick={sideLeft} size={30} className="text-gray-200 cursor-pointer" />
+        </div>
+        <div className="bg-[#272727] m-1 rounded-md hover:bg-gray-800">
+          <MdChevronRight onClick={sideRight} size={30} className="text-gray-200 cursor-pointer" />
+        </div>
+      </div>
+    </div>
+
+    <div className="relative mt-4">
+      <div
+        id="slider"
+        className="flex gap-4 w-full overflow-x-auto scroll-smooth whitespace-nowrap scrollbar-hide py-2"
+      >
+        {casts.length > 0 ? (
+          casts.map((cast, i) => (
+            <div key={i} className="flex-shrink-0 w-[280px] sm:w-[300px] h-[280px]">
+              <UserCastCard cast={cast} />
+            </div>
+          ))
+        ) : (
+          <p className="text-white">No casts to display</p>
+        )}
+      </div>
+    </div>
   </div>
 </div>
 

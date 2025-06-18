@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import CastCard from "./CastCard";
 import CastCardLoader from "./CastCardLoader";
+import {MdChevronLeft} from 'react-icons/md';
+import {MdChevronRight} from 'react-icons/md';
 
 export default function TrendingCast(){
     const [topCasts, setTopCasts] = useState([]);
