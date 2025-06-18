@@ -184,9 +184,10 @@ export default function Profile(){
 
 
  return (
-  <div className="w-full max-w-7xl mx-auto px-4 py-6 flex flex-col gap-10">
+  <div className="w-full max-w-9xl mx-auto px-4 py-6 flex flex-col gap-10">
   {/* Profile Section */}
-  <div className="flex flex-col lg:flex-row gap-8 justify-center items-center">
+  <div className="flex flex-col lg:flex-row gap-20 justify-center items-center">
+    <div className="flex flex-col justify-center items-center gap-8 lg:flex-row">
   <img
         src={user.pfp_url}
         alt="Profile"
@@ -206,9 +207,9 @@ export default function Profile(){
         <p className="mt-4 italic">{user.profile.bio.text}</p>
       </div>
     </div>
-
+    </div>
     {/* Token Card */}
-    <div className="w-full max-w-sm">
+    <div >
       <TokenCard available={tokenAvailable} tokenData={tokenData} tokenPrice={tokenPrice} />
     </div>
   </div>
@@ -216,7 +217,7 @@ export default function Profile(){
   {/* Cast Section */}
   <div className="bg-[#141414] rounded-2xl p-4">
     <div className="flex items-center justify-between">
-      <h2 className="text-2xl font-semibold text-white">Cast</h2>
+      <h2 className="text-2xl font-semibold pl-2 text-white">Your Casts</h2>
       <div className="flex">
         <div className="bg-[#272727] m-1 rounded-md hover:bg-gray-800">
           <MdChevronLeft onClick={sideLeft} size={30} className="text-gray-200 cursor-pointer" />
@@ -234,7 +235,7 @@ export default function Profile(){
       >
         {casts.length > 0 ? (
           casts.map((cast, i) => (
-            <div key={i} className="flex-shrink-0 w-[280px] sm:w-[300px] h-[280px]">
+            <div key={i} className="flex-shrink-0 w-[280px] sm:w-[300px] m-5 h-[280px]">
               <UserCastCard cast={cast} />
             </div>
           ))
