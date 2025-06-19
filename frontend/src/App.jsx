@@ -23,6 +23,9 @@ function App() {
         },
         {path: "createToken", element: <Form />,
           errorElement: <div>Page Not found</div>
+        },
+        {path: "account/:fid", element: <UserProfile />,
+          errorElement: <div>Page Not found</div>
         }
       ]
     }

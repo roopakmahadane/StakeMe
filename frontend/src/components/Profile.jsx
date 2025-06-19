@@ -184,7 +184,7 @@ export default function Profile(){
 
 
  return (
-  <div className="w-full max-w-9xl mx-auto px-4 py-6 flex flex-col gap-10">
+  <div className="w-full max-w-7xl mx-auto px-4 py-6 flex flex-col gap-10">
   {/* Profile Section */}
   <div className="flex flex-col lg:flex-row gap-20 justify-center items-center">
     <div className="flex flex-col justify-center items-center gap-8 lg:flex-row">
@@ -235,7 +235,7 @@ export default function Profile(){
       >
         {casts.length > 0 ? (
           casts.map((cast, i) => (
-            <div key={i} className="flex-shrink-0 w-[280px] sm:w-[300px] m-5 h-[280px]">
+            <div key={i} className="flex-shrink-0 w-[280px] sm:w-[300px] m-5 md:m-0 h-[280px]">
               <UserCastCard cast={cast} />
             </div>
           ))

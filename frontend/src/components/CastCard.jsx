@@ -54,12 +54,26 @@ export default function CastCard({cast}){
   
         <p className="text-gray-800 dark:text-gray-200 mb-3">{text}</p>
   
-        <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
-          <div>❤️ {reactions.likes_count || 0}</div>
-          <div>♻️ {reactions.recasts_count || 0}</div>
-          <div>💬 {replies.count || 0}</div>
-          <div>{timeDate}</div>
+ 
+        <div className="flex justify-between text-sm text-gray-400">
+        <div className="flex items-center gap-1">
+          <img className="w-4 h-4" src="/comment.png" alt="Comments" />
+          {replies.count || 0}
         </div>
+        <div className="flex items-center gap-1">
+          <img className="w-4 h-4" src="/repeating.png" alt="Recasts" />
+          {reactions.recasts_count || 0}
+        </div>
+        <div className="flex items-center gap-1">
+          <img className="w-4 h-4" src="/heart.png" alt="Likes" />
+          {reactions.likes_count || 0}
+        </div>
+        <div className="flex items-center gap-1">
+          {timeDate}
+        </div>
+      </div>
+
+
       </div>
     );
 }

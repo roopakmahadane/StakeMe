@@ -4,7 +4,7 @@ import { createWallet } from "thirdweb/wallets";
 import { useActiveAccount } from "thirdweb/react";
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-
+import SearchBar from "./SearchBar";
 
 const Header = () => {
   const activeAccount = useActiveAccount();
@@ -71,7 +71,7 @@ const Header = () => {
           </Link>
         </div>
       </div>
-
+      <SearchBar/>
       <div className="flex items-center">
       <div>
         {user ? (
@@ -98,7 +98,7 @@ const Header = () => {
           <div className="w-12 h-12 rounded-full bg-gray-600 animate-pulse" />
         )}
       </div>
-
+ 
       <div className="m-5">
         <ConnectButton client={thirdwebClient} wallets={[wallet]} />
       </div>
