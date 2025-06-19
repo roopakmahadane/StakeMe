@@ -54,7 +54,7 @@ export default function SearchBar(){
                     onClick={() => {
                         navigate(`./account/${user.fid}`)
                         setSuggestions([]);
-                        setQuery("");
+                        
                         }} 
                     className='flex gap-3 items-center cursor-pointer hover:bg-gray-800' 
                     key={user.fid} >

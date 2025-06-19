@@ -7,6 +7,7 @@ import {ethers} from 'ethers';
 import CreatorFactory from "../../../artifacts/contracts/CreatorFactory.sol/CreatorFactory.json"
 import { useActiveAccount } from "thirdweb/react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function Form(){
 const [tokenName, setTokenName] = useState("");
@@ -37,21 +38,35 @@ const handleSubmit = async (e) => {
         CreatorFactory.abi,
         signer
       );
-  
-      const tx = await contract.createToken(tokenName, tokenSymbol);
-      console.log("Transaction sent, waiting for confirmation...");
-      
-      const receipt = await tx.wait();
-  
-      if (receipt.status === 1) {
-        console.log("Token created successfully:", receipt);
-        setLoading(false);
-        const creatorAddress = activeAccount?.address || await signer.getAddress();
-        navigate(`/profile/${creatorAddress}`);
-      } else {
-        setLoading(false);
-        console.error("Transaction failed:", receipt);
-      }
+
+      await toast.promise(
+        async () => {
+          const tx = await contract.createToken(tokenName, tokenSymbol);
+          const receipt = await tx.wait();
+
+          if (receipt.status !== 1) {
+            throw new Error("Transaction failed");
+          }
+
+          const creatorAddress = activeAccount?.address || await signer.getAddress();
+          navigate(`/profile`);
+        },
+        {
+          loading: "Launching your token...",
+          success: "Token launched successfully 🎉",
+          error: (err) => err?.message || "Failed to launch token",
+        },
+        {
+          success: {
+            duration: 4000,
+            style: {
+              background: "#333",
+              color: "#fff",
+              borderRadius: "10px",
+            },
+          },
+        }
+      );
   
     } catch (error) {
         setLoading(false);

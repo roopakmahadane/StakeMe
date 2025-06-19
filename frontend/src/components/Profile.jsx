@@ -210,7 +210,7 @@ export default function Profile(){
     </div>
     {/* Token Card */}
     <div >
-      <TokenCard available={tokenAvailable} tokenData={tokenData} tokenPrice={tokenPrice} />
+      <TokenCard isUser = {true} available={tokenAvailable} tokenData={tokenData} tokenPrice={tokenPrice} />
     </div>
   </div>
 

@@ -3,9 +3,11 @@ import './App.css'
 import Layout from './Layout'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Form from './components/Form'
+import {Toaster} from 'react-hot-toast'
 
 import Profile from './components/Profile';
 import Home from './components/Home';
+import UserProfile from './components/UserProfile'
 
 function App() {
 
@@ -32,7 +34,11 @@ function App() {
   ])
 
   return (
-    <RouterProvider router={router} />
+    <>
+     <Toaster position="top-right" reverseOrder={false} />
+     <RouterProvider router={router} />
+    </>
+   
   )
 }
 
