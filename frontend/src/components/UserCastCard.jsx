@@ -6,7 +6,7 @@ export default function UserCastCard({ cast }) {
   }
 
   return (
-    <div className="w-full min-w-[300px] max-w-[300px] rounded-2xl bg-[#1a1a1a] p-4 text-white shadow-md flex flex-col justify-between break-words">
+    <div className="w-full min-w-[300px] max-w-[300px] rounded-2xl bg-black p-4 text-white shadow-md flex flex-col justify-between break-words">
       {/* Header */}
       <div className="flex gap-3 items-center mb-3">
         <img

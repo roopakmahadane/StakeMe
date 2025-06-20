@@ -9,6 +9,7 @@ import { useActiveAccount } from "thirdweb/react";
 import CastCardLoader from "./CastCardLoader";
 import {MdChevronLeft} from 'react-icons/md';
 import {MdChevronRight} from 'react-icons/md';
+import SocialGraph from './SocialGraph';
 
 export default function Profile(){
    
@@ -244,6 +245,9 @@ export default function Profile(){
         )}
       </div>
     </div>
+  </div>
+  <div>
+    <SocialGraph fid={user.fid}/>
   </div>
 </div>
 

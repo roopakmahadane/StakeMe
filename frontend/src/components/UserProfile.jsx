@@ -9,6 +9,7 @@ import CreatorToken from "../../../artifacts/contracts/CreatorToken.sol/CreatorT
 import TokenCard from './TokenCard'
 import UserCastCard from './UserCastCard.jsx'
 import {calculateCreatorTokenPrice} from '../utils/calculateTokenPrice.js'
+import SocialGraph from "./SocialGraph.jsx";
 
 export default function UserProfile(){
    const {fid} = useParams();
@@ -237,6 +238,9 @@ export default function UserProfile(){
             )}
           </div>
         </div>
+      </div>
+      <div>
+        <SocialGraph fid={fid}/>
       </div>
     </div>
     

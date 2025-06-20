@@ -38,10 +38,40 @@ export default function TokenDefault({ available, tokenData, tokenPrice, isUser 
         >
           🚀 Launch Your Token
         </Link>
-      ): <div className="text-center text-gray-300">
+      ): 
+      isUser && available? 
+      (
+        <div className="space-y-2 text-center">
+        <h2 className="text-3xl font-extrabold tracking-wide">Your Token</h2>
+
+        <div className="grid grid-cols-2 gap-2 text-left text-lg font-semibold text-white/90">
+          <div className="bg-white/10 p-4 rounded-xl shadow-inner">
+            <p className="text-sm text-white/60">Token Name</p>
+            <p className="text-xl font-bold">{tokenData.name}</p>
+          </div>
+
+          <div className="bg-white/10 p-4 rounded-xl shadow-inner">
+            <p className="text-sm text-white/60">Token Symbol</p>
+            <p className="text-xl font-bold">{tokenData.symbol}</p>
+          </div>
+
+          <div className="col-span-2 bg-white text-black rounded-xl p-2 shadow-md flex justify-between items-center">
+            <p className="text-lg font-semibold">Price</p>
+            <p className="text-2xl font-bold">
+            {tokenPrice ? `$${tokenPrice}` : "N/A"} 
+             <span className="text-sm font-medium text-gray-700">/token</span>
+            </p>
+          </div>
+        </div>
+        <input />
+      </div>
+    ) :
+      (
+      <div className="text-center text-gray-300">
       <p className="text-md italic">Creator hasn’t launched a token yet.</p>
       <p className="text-sm mt-1 text-gray-800">Follow them to stay updated!</p>
     </div>
+    ) 
      }
     </div>
   );
