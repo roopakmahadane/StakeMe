@@ -10,6 +10,8 @@ import TokenCard from './TokenCard'
 import UserCastCard from './UserCastCard.jsx'
 import {calculateCreatorTokenPrice} from '../utils/calculateTokenPrice.js'
 import SocialGraph from "./SocialGraph.jsx";
+import Modal from'./Modal'
+import { Button, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 
 export default function UserProfile(){
    const {fid} = useParams();
@@ -20,7 +22,8 @@ export default function UserProfile(){
    const [tokenData, setTokenData] = useState([]);
    const [casts, setCasts] = useState([]);
    const [tokenPrice, setTokenPrice] = useState(0);
-
+  const [isModelOpen, setIsModalOpen] = useState(false);
+  const [purchaseAmount, setPurchaseAmount] = useState(0);
 
    useEffect(() => {
 
@@ -203,8 +206,38 @@ export default function UserProfile(){
         </div>
         </div>
         {/* Token Card */}
-        <div >
+        <div flex flex-col>
           <TokenCard isUser = {false} available={tokenAvailable} tokenData={tokenData} tokenPrice={tokenPrice} />
+          <div className="w-full mt-3 text-center">
+          <button
+        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md w-1/2 self-center cursor-pointer"
+        onClick={() => setIsModalOpen(true)}
+      >
+        Buy Token
+      </button>
+      </div>
+      <Modal isOpen={isModelOpen} onClose={() => setIsModalOpen(false)}>
+        <h2 className="text-lg font-bold mb-4">Buy Creator Token</h2>
+        <div>
+        <p>{tokenData.name}</p>
+        <p className="mb-2 text-sm text-white/60">{tokenData.symbol}</p>
+        </div>
+        <input
+          value={purchaseAmount}
+          onChange={(e) => setPurchaseAmount(e.target.value)}
+          type="number"
+          className="w-full border rounded p-2"
+          placeholder="Enter token amount"
+        />
+        <p className="mt-3">Amount in dollars</p>
+        <p>{tokenPrice*purchaseAmount} $</p>
+        <p className="text-sm text-white/60 mt-5 italic">*Final cost may be higher due to Ethereum gas fees, which are not included in the price above.</p>
+        <button
+          className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded"
+        >
+          Confirm Purchase
+        </button>
+      </Modal>
         </div>
       </div>
     
@@ -241,6 +274,7 @@ export default function UserProfile(){
       </div>
       <div>
         <SocialGraph fid={fid}/>
+
       </div>
     </div>
     

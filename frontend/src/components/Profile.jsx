@@ -11,6 +11,7 @@ import {MdChevronLeft} from 'react-icons/md';
 import {MdChevronRight} from 'react-icons/md';
 import SocialGraph from './SocialGraph';
 
+
 export default function Profile(){
    
     const activeAccount = useActiveAccount();
@@ -20,6 +21,7 @@ export default function Profile(){
     const [tokenData, setTokenData] = useState([]);
     const [casts, setCasts] = useState([]);
     const [tokenPrice, setTokenPrice] = useState(0);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
 
 
@@ -161,10 +163,10 @@ export default function Profile(){
 
     if (!user) {
       return (
-        <div className="mx-30 my-10">
+        <div className="mx-40 my-10">
           <div className="flex gap-30">
           <CastCardLoader />
-          <CastCardLoader />
+    
           </div>
           <div className="mt-10">
           <CastCardLoader />
@@ -212,6 +214,25 @@ export default function Profile(){
     {/* Token Card */}
     <div >
       <TokenCard isUser = {true} available={tokenAvailable} tokenData={tokenData} tokenPrice={tokenPrice} />
+      <button
+        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
+        onClick={() => setIsModalOpen(true)}
+      >
+        Buy Token
+      </button>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <h2 className="text-lg font-bold mb-4">Buy Creator Token</h2>
+        <input
+          type="number"
+          className="w-full border rounded p-2"
+          placeholder="Enter token amount"
+        />
+        <button
+          className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded"
+        >
+          Confirm Purchase
+        </button>
+      </Modal>
     </div>
   </div>
 

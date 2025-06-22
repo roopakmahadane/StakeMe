@@ -37,7 +37,7 @@ export default function SocialGraph({ fid }) {
 
       try {
         const res = await fetch(
-          `https://api.neynar.com/v2/farcaster/user/best_friends/?limit=10&fid=${fid}`,
+          `https://api.neynar.com/v2/farcaster/user/best_friends/?limit=20&fid=${fid}`,
           options
         );
         const data = await res.json();
@@ -70,7 +70,7 @@ export default function SocialGraph({ fid }) {
     }
 
     getBestFriends();
-  }, []);
+  }, [fid]);
 
   function normalizeSize(score, maxScore, min = 50, max = 150) {
     if (!maxScore || maxScore === 0) return min;
@@ -107,7 +107,7 @@ export default function SocialGraph({ fid }) {
       positions.push({ x, y, size });
       return { ...friend, x, y, size };
     });
-
+    console.log("bubbles",bubbles)
     return bubbles;
   };
 
@@ -118,7 +118,7 @@ export default function SocialGraph({ fid }) {
         <div className="bg-[#141414] rounded-2xl w-2/3 p-4">
              <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Social Graph</h2>
              <div className="p-10 bg-black text-2xl max-w-2xl  border border-white/10 rounded-2xl">
-             <h2>No friends.... be more social</h2>
+             <h2>Social graph not available</h2>
              </div>
             
         </div>
