@@ -206,7 +206,7 @@ export default function UserProfile(){
         </div>
         </div>
         {/* Token Card */}
-        <div flex flex-col>
+        <div>
           <TokenCard isUser = {false} available={tokenAvailable} tokenData={tokenData} tokenPrice={tokenPrice} />
           <div className="w-full mt-3 text-center">
           <button
@@ -223,6 +223,8 @@ export default function UserProfile(){
         <p className="mb-2 text-sm text-white/60">{tokenData.symbol}</p>
         </div>
         <input
+        min={1}
+        step={1}
           value={purchaseAmount}
           onChange={(e) => setPurchaseAmount(e.target.value)}
           type="number"
@@ -230,10 +232,12 @@ export default function UserProfile(){
           placeholder="Enter token amount"
         />
         <p className="mt-3">Amount in dollars</p>
-        <p>{tokenPrice*purchaseAmount} $</p>
+        <p>${(tokenPrice*purchaseAmount).toFixed(2)}</p>
         <p className="text-sm text-white/60 mt-5 italic">*Final cost may be higher due to Ethereum gas fees, which are not included in the price above.</p>
         <button
-          className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded"
+        //onClick={handlePurchase}
+         disabled={purchaseAmount <= 0}
+          className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white cursor-pointer font-bold py-2 rounded"
         >
           Confirm Purchase
         </button>

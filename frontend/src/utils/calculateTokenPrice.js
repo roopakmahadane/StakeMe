@@ -1,10 +1,10 @@
 export function calculateCreatorTokenPrice({
   growthScore,
   supply,
-  basePriceUSD = 0.01,       // Base price per token in USD
+  basePriceUSD = 0.1,       // Base price per token in USD
   scoreExponent = 2.5,
   supplyExponent = 1.2,
-  minPriceUSD = 0.005,       // Optional floor price
+  minPriceUSD = 0.08,       // Optional floor price
 }) {
   const adjustedScore = Math.pow(growthScore, scoreExponent);
   const supplyFactor = Math.pow(supply + 1, supplyExponent); // +1 to avoid zero

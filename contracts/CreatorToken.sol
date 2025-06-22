@@ -11,6 +11,10 @@ using MessageHashUtils for bytes32;
 
 contract CreatorToken is ERC20, Ownable {
     address public backendSigner;
+    uint256 public constant MAX_PER_TX = 25;
+    uint256 public constant MAX_PER_DAY = 50;
+
+    mapping(address => mapping(uint256 => uint256)) public dailyMinted;
 
     constructor(
         address _owner,
@@ -21,6 +25,10 @@ contract CreatorToken is ERC20, Ownable {
         backendSigner = _backendSigner;
     }
 
+    function getDayNumber(uint256 timestamp) internal pure returns (uint256) {
+    return timestamp / 1 days;
+}
+
     function mintWithSignature(
         uint256 amount,
         uint256 pricePerToken,
@@ -29,6 +37,13 @@ contract CreatorToken is ERC20, Ownable {
     ) external payable {
         require(block.timestamp <= expiry, "Signature expired");
         require(msg.value >= amount * pricePerToken, "Insufficient payment");
+        require(amount <= MAX_PER_TX, "Exceeds per transaction limit");
+        
+
+        uint256 today = getDayNumber(block.timestamp);
+        uint256 alreadyMinted = dailyMinted[msg.sender][today];
+
+        require(alreadyMinted + amount <= MAX_PER_DAY, "Exceeds daily mint limit");
 
         bytes32 messageHash = keccak256(
             abi.encodePacked(address(this), msg.sender, amount, pricePerToken, expiry)
@@ -40,8 +55,14 @@ contract CreatorToken is ERC20, Ownable {
             ECDSA.recover(ethSignedMessageHash, signature) == backendSigner,
             "Invalid signature"
         );
-
+        dailyMinted[msg.sender][today] += amount;
         _mint(msg.sender, amount * 10 ** decimals());
+
+        
         payable(owner()).transfer(msg.value);
     }
+    function getRemainingMintsToday(address user) external view returns (uint256) {
+    uint256 today = getDayNumber(block.timestamp);
+    return 50 - dailyMinted[user][today];
+}
 }
