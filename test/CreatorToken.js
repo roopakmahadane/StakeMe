@@ -67,6 +67,7 @@ const {
         const balance = await token.balanceOf(follower.address);
         expect(balance).to.equal(ethers.parseUnits(amount.toString(), 18));
       });
+     
 
       it("should revert if the signature is expired", async () => {
         const { token, backendSigner, follower } = await loadFixture(deployWithFactoryAndGetToken);
@@ -175,6 +176,70 @@ const {
         const balance = await token.balanceOf(followerAddress);
         expect(balance).to.equal(ethers.parseUnits("9", 18)); // 2 + 3 + 4
       });
+
+
+
+      it("should revert if daily limit of purchase of token by particular address is reached", async () => {
+        const { token, backendSigner, follower } = await loadFixture(deployWithFactoryAndGetToken);
+      
+        const tokenAddress = await token.getAddress();
+        const followerAddress = await follower.getAddress();
+        const pricePerToken = ethers.parseEther("0.01");
+        const expiry = Math.floor(Date.now() / 1000) + 3600;
+      
+        for (let i = 0; i < 2; i++) {
+          const amount = 24;
+          
+          const messageHash = ethers.solidityPackedKeccak256(
+            ["address", "address", "uint256", "uint256", "uint256"],
+            [tokenAddress, followerAddress, amount, pricePerToken, expiry]
+          );
+      
+          const signature = await backendSigner.signMessage(ethers.toBeArray(messageHash));
+          const totalValue = pricePerToken * BigInt(amount);
+      
+          await token.connect(follower).mintWithSignature(
+            amount, pricePerToken, expiry, signature,
+            { value: totalValue }
+          );
+        }
+        const newAmount = 3;
+
+        const newMessageHash = ethers.solidityPackedKeccak256(
+          ["address", "address", "uint256", "uint256", "uint256"],
+          [tokenAddress, followerAddress, newAmount, pricePerToken, expiry]
+        );
+        const newSignature = await backendSigner.signMessage(ethers.toBeArray(newMessageHash));
+        const newTotalValue = pricePerToken*BigInt(3);
+        await expect(
+          token.connect(follower).mintWithSignature(newAmount, pricePerToken, expiry, newSignature, {
+            value: newTotalValue,
+          })
+        ).to.be.revertedWith("Exceeds daily mint limit");
+      });
+
+
+      it("should revert back if try to buy more than per transaction limit", async() => {
+        const { token, backendSigner, follower, deployer } = await loadFixture(deployWithFactoryAndGetToken);
+        const amount = 26;
+        const pricePerToken = ethers.parseEther("0.01");
+        const expiry = Math.floor(Date.now() / 1000) + 3600;
+        const totalValue = pricePerToken * BigInt(amount);
+        const tokenAddress = await token.getAddress();
+        const followerAddress = await follower.getAddress();
+
+        const messageHash = ethers.solidityPackedKeccak256(
+          ["address", "address", "uint256", "uint256", "uint256"],
+          [tokenAddress, followerAddress, amount, pricePerToken, expiry]
+        );
+        const signature = await backendSigner.signMessage(ethers.toBeArray(messageHash));
+
+        await expect(
+          token.connect(follower).mintWithSignature(amount, pricePerToken, expiry, signature, {
+            value: totalValue,
+          })
+        ).to.be.revertedWith("Exceeds per transaction limit");
+      })
 
       it("should transfer ETH to the token owner after mint", async () => {
         const { token, backendSigner, follower, deployer } = await loadFixture(deployWithFactoryAndGetToken);
