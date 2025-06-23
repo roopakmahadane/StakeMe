@@ -10,14 +10,15 @@ import TokenCard from './TokenCard'
 import UserCastCard from './UserCastCard.jsx'
 import {calculateCreatorTokenPrice} from '../utils/calculateTokenPrice.js'
 import SocialGraph from "./SocialGraph.jsx";
-import Modal from'./Modal'
-import { Button, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
+import toast from "react-hot-toast";
+import { useNavigate } from 'react-router-dom';
+import Modal from "./Modal.jsx";
 
 export default function UserProfile(){
    const {fid} = useParams();
-
+   const navigate = useNavigate();
    const [user, setUser] = useState(null);
-
+  const [tokenPriceInETH, setTokenPriceInETH] = useState(0);
    const [tokenAvailable, setTokenAvailable] = useState(false)
    const [tokenData, setTokenData] = useState([]);
    const [casts, setCasts] = useState([]);
@@ -178,6 +179,97 @@ export default function UserProfile(){
           let slider = document.getElementById('slider');
           slider.scrollLeft = slider.scrollLeft + 700;
         }
+
+        const handlePurchase = async () => {
+          const url = 'https://fast-price-exchange-rates.p.rapidapi.com/api/v1/convert?amount=1&base_currency=USD&quote_currency=ETH';
+        
+          const options = {
+            method: 'GET',
+            headers: {
+              'x-rapidapi-key': import.meta.env.VITE_RAPID_API_KEY,
+              'x-rapidapi-host': 'fast-price-exchange-rates.p.rapidapi.com'
+            }
+          };
+        
+          try {
+            const response = await fetch(url, options);
+            const result = await response.json();
+            const ethPerUsd = result.to.ETH;
+        
+            const ethAmount = (tokenPrice * ethPerUsd).toFixed(6);
+        
+            const pricePerToken = ethers.parseEther(`${ethAmount}`);
+            const expiry = Math.floor(Date.now() / 1000) + 3600;
+            const tokenAddress = tokenData.tokenAddress;
+        
+            const res = await fetch('/api/generate-signature', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                tokenAddress,
+                userAddress: user.verified_addresses.eth_addresses[1],
+                purchaseAmount,
+                pricePerToken: pricePerToken.toString(),
+                expiry
+              })
+            });
+        
+            if (!res.ok) throw new Error("Failed to get signature from backend");
+            const { signature } = await res.json();
+        
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            const token = new ethers.Contract(tokenAddress, CreatorToken.abi, signer);
+        
+            const amount = Number(purchaseAmount);
+            const totalValue = pricePerToken * BigInt(amount);
+            const buffer = BigInt(Math.ceil(Number(totalValue) * 1.01));
+        
+            if (amount > 25) {
+              toast.error("You can buy max 25 tokens in one transaction");
+              return;
+            }
+        
+            await toast.promise(
+              async () => {
+                const tx = await token.mintWithSignature(
+                  amount,
+                  pricePerToken,
+                  expiry,
+                  signature,
+                  { value: buffer }
+                );
+                const receipt = await tx.wait();
+        
+                if (receipt.status !== 1) {
+                  throw new Error("Transaction failed");
+                }
+        
+                navigate(`/profile`);
+              },
+              {
+                loading: "Purchase in progress...",
+                success: "Tokens purchased successfully! 🎉",
+                error: (err) => err?.message || "Failed to launch token",
+              },
+              {
+                success: {
+                  duration: 4000,
+                  style: {
+                    background: "#333",
+                    color: "#fff",
+                    borderRadius: "10px",
+                  },
+                },
+              }
+            );
+        
+          } catch (error) {
+            console.error("Error during purchase:", error);
+            toast.error(error.message);
+          }
+        };
+        
     
     
      return (
@@ -235,7 +327,7 @@ export default function UserProfile(){
         <p>${(tokenPrice*purchaseAmount).toFixed(2)}</p>
         <p className="text-sm text-white/60 mt-5 italic">*Final cost may be higher due to Ethereum gas fees, which are not included in the price above.</p>
         <button
-        //onClick={handlePurchase}
+        onClick={handlePurchase}
          disabled={purchaseAmount <= 0}
           className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white cursor-pointer font-bold py-2 rounded"
         >

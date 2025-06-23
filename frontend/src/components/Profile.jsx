@@ -214,25 +214,7 @@ export default function Profile(){
     {/* Token Card */}
     <div >
       <TokenCard isUser = {true} available={tokenAvailable} tokenData={tokenData} tokenPrice={tokenPrice} />
-      <button
-        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
-        onClick={() => setIsModalOpen(true)}
-      >
-        Buy Token
-      </button>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <h2 className="text-lg font-bold mb-4">Buy Creator Token</h2>
-        <input
-          type="number"
-          className="w-full border rounded p-2"
-          placeholder="Enter token amount"
-        />
-        <button
-          className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded"
-        >
-          Confirm Purchase
-        </button>
-      </Modal>
+     
     </div>
   </div>
 
