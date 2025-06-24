@@ -19,7 +19,7 @@ export default function UserProfile(){
    const navigate = useNavigate();
    const [user, setUser] = useState(null);
   const [tokenPriceInETH, setTokenPriceInETH] = useState(0);
-   const [tokenAvailable, setTokenAvailable] = useState(false)
+   const [tokenAvailable, setTokenAvailable] = useState()
    const [tokenData, setTokenData] = useState([]);
    const [casts, setCasts] = useState([]);
    const [tokenPrice, setTokenPrice] = useState(0);
@@ -79,13 +79,13 @@ export default function UserProfile(){
           );
           const address = user.verified_addresses.eth_addresses[1]
           const tokenByCreator = await contract.getTokenByCreator(address);
-          console.log(tokenByCreator);
+          console.log("tokenByCreator",tokenByCreator);
           setTokenData(tokenByCreator);
           setTokenAvailable(true)
 
         } catch (error) {
           console.error("No token found or contract call failed:", error);
-
+          setTokenAvailable(false)
         }
       }
 
@@ -301,12 +301,12 @@ export default function UserProfile(){
         <div>
           <TokenCard isUser = {false} available={tokenAvailable} tokenData={tokenData} tokenPrice={tokenPrice} />
           <div className="w-full mt-3 text-center">
-          <button
+          {tokenAvailable && <button
         className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md w-1/2 self-center cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
         Buy Token
-      </button>
+      </button>}
       </div>
       <Modal isOpen={isModelOpen} onClose={() => setIsModalOpen(false)}>
         <h2 className="text-lg font-bold mb-4">Buy Creator Token</h2>

@@ -107,7 +107,6 @@ export default function SocialGraph({ fid }) {
       positions.push({ x, y, size });
       return { ...friend, x, y, size };
     });
-    console.log("bubbles",bubbles)
     return bubbles;
   };
 

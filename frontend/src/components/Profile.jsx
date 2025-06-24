@@ -21,7 +21,7 @@ export default function Profile(){
     const [tokenData, setTokenData] = useState([]);
     const [casts, setCasts] = useState([]);
     const [tokenPrice, setTokenPrice] = useState(0);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+
 
 
 

@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function TokenDefault({ available, tokenData, tokenPrice, isUser }) {
+
+  useEffect(() => {
+    console.log("inside token card",available, tokenData)
+  }, [])
+
   return (
     <div className="bg-gradient-to-br from-purple-700 via-pink-600 to-yellow-400 rounded-2xl p-4 shadow-xl text-white w-full">
       {available ? (
