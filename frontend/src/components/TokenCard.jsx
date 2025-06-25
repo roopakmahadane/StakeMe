@@ -26,7 +26,7 @@ export default function TokenDefault({ available, tokenData, tokenPrice, isUser 
             <div className="col-span-2 bg-white text-black rounded-xl p-2 shadow-md flex justify-between items-center">
               <p className="text-lg font-semibold">Price</p>
               <p className=" text-2xl font-bold">
-              {tokenPrice ? `$${tokenPrice}` : "N/A"} 
+              {tokenPrice ? `$${(tokenPrice).toFixed(2)}` : "N/A"} 
                <span className="text-lg font-medium text-gray-700">/token</span>
               </p>
             </div>

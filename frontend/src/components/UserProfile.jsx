@@ -136,12 +136,14 @@ export default function UserProfile(){
       
           // Step 3: Call totalSupply()
           const rawSupply = await tokenContract.totalSupply();
-      
+          const tokenSupply = Number(ethers.formatUnits(rawSupply, 18));
+
           // Step 4: Calculate price using your utility
-        
+          console.log("supply",rawSupply )
+          console.log("score",user.score)
           const priceOfToken = calculateCreatorTokenPrice({
             growthScore: user.score,
-            supply:  Number(rawSupply)
+            supply: tokenSupply
           });
           setTokenPrice(priceOfToken)
           console.log("Price of token:", priceOfToken);
