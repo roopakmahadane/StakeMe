@@ -201,14 +201,16 @@ export default function UserProfile(){
             const pricePerToken = ethers.parseEther(`${ethAmount}`);
             const expiry = Math.floor(Date.now() / 1000) + 3600;
             const tokenAddress = tokenData.tokenAddress;
-        
-            const res = await fetch('/api/generate-signature', {
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            console.log("Frontend msg.sender will be:", await signer.getAddress());
+            const res = await fetch('http://localhost:3000/api/generate-signature', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 tokenAddress,
-                userAddress: user.verified_addresses.eth_addresses[1],
-                purchaseAmount,
+                userAddress: await signer.getAddress(),
+                purchaseAmount: Number(purchaseAmount),
                 pricePerToken: pricePerToken.toString(),
                 expiry
               })
@@ -217,8 +219,7 @@ export default function UserProfile(){
             if (!res.ok) throw new Error("Failed to get signature from backend");
             const { signature } = await res.json();
         
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
+           
             const token = new ethers.Contract(tokenAddress, CreatorToken.abi, signer);
         
             const amount = Number(purchaseAmount);

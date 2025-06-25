@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "@neynar/nodejs-sdk": "^2.46.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "list": "^2.0.19",
     "npm": "^11.4.1"

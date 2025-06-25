@@ -11,7 +11,6 @@ export default function TokenDefault({ available, tokenData, tokenPrice, isUser 
     <div className="bg-gradient-to-br from-purple-700 via-pink-600 to-yellow-400 rounded-2xl p-4 shadow-xl text-white w-full">
       {available ? (
         <div className="space-y-2 text-center">
-          <h2 className="text-3xl font-extrabold tracking-wide">Your Token</h2>
 
           <div className="grid grid-cols-2 gap-2 text-left text-lg font-semibold text-white/90">
             <div className="bg-white/10 p-4 rounded-xl shadow-inner">

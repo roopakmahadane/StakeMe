@@ -156,9 +156,70 @@ export default function Profile(){
         }
       }
 
+
+
+
       fetchTokenPrice(user);
       fetchUserCasts();
+
+
     },[user])
+
+    useEffect(() => {
+      async function fetchPurchases() {
+        const factoryAddress =  "0x8a7C645B17cfe1D3B345BcaACdCC65d3e08b7Ccb";
+        const history = await getUserPurchaseHistory(factoryAddress, activeAccount?.address);
+        console.log("history",history)
+        setUserPurchases(history);
+      }
+    
+      if (activeAccount?.address) fetchPurchases();
+    }, [activeAccount?.address]);
+
+
+
+    async function fetchTokenPurchaseEvents(provider, tokenAddress, userAddress) {
+      const token = new ethers.Contract(tokenAddress, CreatorToken, provider);
+    
+      const filter = token.filters.TokenPurchased(userAddress);
+      const events = await token.queryFilter(filter, 0, "latest");
+    
+      // Get metadata
+      const name = await token.name();
+      const symbol = await token.symbol();
+    
+      return events.map(e => ({
+        tokenAddress,
+        name,
+        symbol,
+        amount: e.args.amount.toString(),
+        price: ethers.formatEther(e.args.pricePerToken),
+        timestamp: Number(e.args.timestamp),
+        txHash: e.transactionHash,
+      }));
+    }
+
+
+    async function getUserPurchaseHistory(factoryAddress, userAddress) {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const factory = new ethers.Contract(factoryAddress, CreatorFactory, provider);
+    
+      const tokenAddresses = await factory.allTokens();
+      let allPurchases = [];
+    
+      for (const tokenAddr of tokenAddresses) {
+        try {
+          const tokenPurchases = await fetchTokenPurchaseEvents(provider, tokenAddr, userAddress);
+          allPurchases = allPurchases.concat(tokenPurchases);
+        } catch (err) {
+          console.error(`Failed to fetch for ${tokenAddr}`, err);
+        }
+      }
+    
+      return allPurchases.sort((a, b) => b.timestamp - a.timestamp);
+    }
+    
+
 
 
     if (!user) {

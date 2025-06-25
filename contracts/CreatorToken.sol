@@ -16,6 +16,13 @@ contract CreatorToken is ERC20, Ownable {
 
     mapping(address => mapping(uint256 => uint256)) public dailyMinted;
 
+    event TokenPurchased(
+  address indexed buyer,
+  uint256 amount,
+  uint256 pricePerToken,
+  uint256 timestamp
+);
+
     constructor(
         address _owner,
         address _backendSigner,
@@ -60,7 +67,9 @@ contract CreatorToken is ERC20, Ownable {
 
         
         payable(owner()).transfer(msg.value);
+        emit TokenPurchased(msg.sender, amount, pricePerToken, block.timestamp);
     }
+    
     function getRemainingMintsToday(address user) external view returns (uint256) {
     uint256 today = getDayNumber(block.timestamp);
     return 50 - dailyMinted[user][today];

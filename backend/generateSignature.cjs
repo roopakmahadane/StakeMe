@@ -2,8 +2,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { ethers } = require("ethers");
 require("dotenv").config();
+const cors = require('cors');
 
 const app = express();
+app.use(cors()); 
 app.use(bodyParser.json());
 
 const backendPrivateKey = process.env.BACKEND_PRIVATE_KEY;
@@ -17,6 +19,15 @@ app.post("/api/generate-signature", async (req, res) => {
   try {
     const { tokenAddress, userAddress, purchaseAmount, pricePerToken, expiry } = req.body;
 
+    console.log({
+      tokenAddress,
+      userAddress,
+      purchaseAmount,
+      pricePerToken,
+      expiry
+    });
+    
+
     if (!tokenAddress || !userAddress || !purchaseAmount || !pricePerToken || !expiry) {
       return res.status(400).json({ error: "Missing required parameters" });
     }
@@ -27,7 +38,7 @@ app.post("/api/generate-signature", async (req, res) => {
     );
 
     const signature = await signer.signMessage(ethers.toBeArray(messageHash));
-
+    console.log("signature", res.json({ signature }));
     res.json({ signature });
   } catch (error) {
     console.error("Signature error:", error);
