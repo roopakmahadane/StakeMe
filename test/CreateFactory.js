@@ -38,7 +38,8 @@ describe("CreateFactory", function () {
     it("should deploy token with valid input", async function(){
       const { creatorFactory } = await loadFixture(deployERC20Factory);
       const tx = await creatorFactory.createToken("RoopakToken", "RPK");
-      await tx.wait();
+      const receipt = await tx.wait();
+      console.log("receipt", receipt)
       const tokenArray = await creatorFactory.allTokens()
       const tokenAddress = tokenArray[0];
       const tokenMetaData = await creatorFactory.tokenMetadata(tokenAddress);

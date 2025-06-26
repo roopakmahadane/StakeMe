@@ -9,6 +9,7 @@ import { useActiveAccount } from "thirdweb/react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
+
 export default function Form(){
 const [tokenName, setTokenName] = useState("");
 const [tokenSymbol, setSymbol] = useState("");
@@ -47,8 +48,25 @@ const handleSubmit = async (e) => {
           if (receipt.status !== 1) {
             throw new Error("Transaction failed");
           }
-
+          
           const creatorAddress = activeAccount?.address || await signer.getAddress();
+          const tokenData = await contract.getTokenByCreator(creatorAddress);
+          const tokenAddress = tokenData.tokenAddress;
+          const backendSignerAddress = "0xe91429169542837A43C70CacFAFBAA5D7e8e63C7"
+
+          await new Promise(resolve => setTimeout(resolve, 5000));
+
+          const verifyRes = await fetch("http://localhost:3000/api/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              address: tokenAddress,
+              constructorArgs: [creatorAddress, backendSignerAddress, tokenName, tokenSymbol]
+            }),
+          });
+          const result = await verifyRes.json();
+          console.log("Verification result:", result);
+         
           navigate(`/profile`);
         },
         {

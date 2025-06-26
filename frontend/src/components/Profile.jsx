@@ -17,7 +17,7 @@ export default function Profile(){
     const activeAccount = useActiveAccount();
     const [user, setUser] = useState(null);
 
-    const [tokenAvailable, setTokenAvailable] = useState(false)
+    const [tokenAvailable, setTokenAvailable] = useState()
     const [tokenData, setTokenData] = useState([]);
     const [casts, setCasts] = useState([]);
     const [tokenPrice, setTokenPrice] = useState(0);
@@ -81,7 +81,7 @@ export default function Profile(){
 
         } catch (error) {
           console.error("No token found or contract call failed:", error);
-
+          setTokenAvailable(false)
         }
       }
 
@@ -130,8 +130,8 @@ export default function Profile(){
             CreatorFactory.abi,
             signer
           );
-       
-          const tokenData = await factory.getTokenByCreator(activeAccount?.address);
+          const address = user.verified_addresses.eth_addresses[1]
+          const tokenData = await factory.getTokenByCreator(address);
           const tokenAddress = tokenData.tokenAddress;
 
           const tokenContract = new ethers.Contract(
@@ -142,12 +142,14 @@ export default function Profile(){
       
           // Step 3: Call totalSupply()
           const rawSupply = await tokenContract.totalSupply();
-      
+          const tokenSupply = Number(ethers.formatUnits(rawSupply, 18));
+
           // Step 4: Calculate price using your utility
-        
+          console.log("supply",rawSupply )
+          console.log("score",user.score)
           const priceOfToken = calculateCreatorTokenPrice({
             growthScore: user.score,
-            supply:  Number(rawSupply)
+            supply: tokenSupply
           });
           setTokenPrice(priceOfToken)
           console.log("Price of token:", priceOfToken);

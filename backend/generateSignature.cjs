@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const { ethers } = require("ethers");
 require("dotenv").config();
 const cors = require('cors');
+const { exec } = require("child_process");
 
 const app = express();
 app.use(cors()); 
@@ -19,14 +20,6 @@ app.post("/api/generate-signature", async (req, res) => {
   try {
     const { tokenAddress, userAddress, purchaseAmount, pricePerToken, expiry } = req.body;
 
-    console.log({
-      tokenAddress,
-      userAddress,
-      purchaseAmount,
-      pricePerToken,
-      expiry
-    });
-    
 
     if (!tokenAddress || !userAddress || !purchaseAmount || !pricePerToken || !expiry) {
       return res.status(400).json({ error: "Missing required parameters" });
@@ -46,5 +39,25 @@ app.post("/api/generate-signature", async (req, res) => {
   }
 });
 
+app.post("/api/verify", async (req, res) => {
+  const { address, constructorArgs } = req.body;
+
+  const argsString = constructorArgs.map(arg =>
+    typeof arg === "string" && arg.startsWith("0x") ? arg : `"${arg}"`
+  ).join(" ");
+  
+  const cmd = `npx hardhat verify --network sepolia ${address} ${argsString}`;
+  console.log("Running:", cmd);
+  exec(cmd, (err, stdout, stderr) => {
+    if (err) {
+      console.error("Verification error:", stderr);
+      return res.status(500).json({ error: stderr });
+    }
+    console.log("Verification output:", stdout);
+    return res.json({ success: true, message: stdout });
+  });
+});
+
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Signature server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`server running on port ${PORT}`));
