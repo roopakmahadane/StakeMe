@@ -68,8 +68,9 @@ export default function Profile(){
         try {
           const provider = new ethers.BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
+          const factoryAddress = import.meta.env.VITE_FACTORY_TOKEN;
           const contract = new ethers.Contract(
-            "0x8a7C645B17cfe1D3B345BcaACdCC65d3e08b7Ccb",
+            factoryAddress,
             CreatorFactory.abi,
             signer
           );
@@ -124,9 +125,9 @@ export default function Profile(){
         try {
           const provider = new ethers.BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
-      
+          const factoryAddress = import.meta.env.VITE_FACTORY_TOKEN;
           const factory = new ethers.Contract(
-            "0x8a7C645B17cfe1D3B345BcaACdCC65d3e08b7Ccb",
+            factoryAddress,
             CreatorFactory.abi,
             signer
           );
@@ -169,7 +170,7 @@ export default function Profile(){
 
     useEffect(() => {
       async function fetchPurchases() {
-        const factoryAddress =  "0x8a7C645B17cfe1D3B345BcaACdCC65d3e08b7Ccb";
+        const factoryAddress =  import.meta.env.VITE_FACTORY_TOKEN;;
         const history = await getUserPurchaseHistory(factoryAddress, activeAccount?.address);
         console.log("history",history)
         setUserPurchases(history);

@@ -33,9 +33,10 @@ const handleSubmit = async (e) => {
   
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
-  
+      console.log("factory address",import.meta.env.VITE_FACTORY_TOKEN)
+      const factoryAddress = import.meta.env.VITE_FACTORY_TOKEN;
       const contract = new ethers.Contract(
-        "0x8a7C645B17cfe1D3B345BcaACdCC65d3e08b7Ccb",
+        factoryAddress,
         CreatorFactory.abi,
         signer
       );
