@@ -6,11 +6,12 @@ import TokenCard from './TokenCard'
 import UserCastCard from './UserCastCard.jsx'
 import {calculateCreatorTokenPrice} from '../utils/calculateTokenPrice.js'
 import { useActiveAccount } from "thirdweb/react";
-import CastCardLoader from "./CastCardLoader";
+
 import {MdChevronLeft} from 'react-icons/md';
 import {MdChevronRight} from 'react-icons/md';
 import SocialGraph from './SocialGraph';
 import PurchaseCard from "./PurchaseCard.jsx";
+import UserProfileLoader from "./UserProfileLoader.jsx";
 
 
 export default function Profile(){
@@ -229,15 +230,7 @@ export default function Profile(){
 
     if (!user) {
       return (
-        <div className="mx-40 my-10">
-          <div className="flex gap-30">
-          <CastCardLoader />
-    
-          </div>
-          <div className="mt-10">
-          <CastCardLoader />
-          </div>   
-        </div>
+       <UserProfileLoader />
       );
     }
 
@@ -320,7 +313,7 @@ export default function Profile(){
         <SocialGraph fid={user.fid}/>
         </div>
         <div className="w-1/3 bg-[#141414] max-h-120 overflow-y-auto scroll-smooth p-4 rounded-2xl">
-        <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Purchase History</h2>
+        <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Your Purchase History</h2>
         {userPurchases.length> 0 ? (userPurchases.map((purchase) => (
           <PurchaseCard purchase={purchase}/>
     ))) : 

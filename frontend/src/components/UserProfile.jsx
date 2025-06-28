@@ -2,7 +2,6 @@ import { useParams } from "react-router-dom"
 import { useState, useEffect } from "react"
 import {MdChevronLeft} from 'react-icons/md';
 import {MdChevronRight} from 'react-icons/md';
-import CastCardLoader from "./CastCardLoader";
 import {ethers} from "ethers"
 import CreatorFactory from "../../../artifacts/contracts/CreatorFactory.sol/CreatorFactory.json"
 import CreatorToken from "../../../artifacts/contracts/CreatorToken.sol/CreatorToken.json" 
@@ -15,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import Modal from "./Modal.jsx";
 import { useActiveAccount } from "thirdweb/react";
 import PurchaseCard from "./PurchaseCard.jsx";
+import UserProfileLoader from "./UserProfileLoader.jsx";
 
 export default function UserProfile(){
    const {fid} = useParams();
@@ -225,15 +225,9 @@ export default function UserProfile(){
 
     if (!user) {
          return (
-           <div className="mx-30 my-10">
-             <div className="flex gap-30">
-             <CastCardLoader />
-             <CastCardLoader />
-             </div>
-             <div className="mt-10">
-             <CastCardLoader />
-             </div>   
-           </div>
+   
+          <UserProfileLoader />
+
          );
        }
 
@@ -371,12 +365,15 @@ export default function UserProfile(){
         <div>
           <TokenCard isUser = {false} available={tokenAvailable} tokenData={tokenData} tokenPrice={tokenPrice} />
           <div className="w-full mt-3 text-center">
-          {tokenAvailable && <button
-        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md w-1/2 self-center cursor-pointer"
-        onClick={() => setIsModalOpen(true)}
-      >
-        Buy Token
-      </button>}
+          {tokenAvailable && (
+  <button
+    onClick={() => setIsModalOpen(true)}
+    className="w-1/2 self-center cursor-pointer bg-[#7f2cff] hover:bg-[#6821cc] text-white font-semibold py-2 rounded-xl shadow-lg transition-all duration-300 ease-in-out transform hover:scale-[1.02] active:scale-[0.98]"
+  >
+    Buy Token
+  </button>
+)}
+
       </div>
       <Modal isOpen={isModelOpen} onClose={() => setIsModalOpen(false)}>
         <h2 className="text-lg font-bold mb-4">Buy Creator Token</h2>
@@ -443,7 +440,7 @@ export default function UserProfile(){
         <SocialGraph fid={user.fid}/>
         </div>
         <div className="w-1/3 bg-[#141414]  p-4 rounded-2xl overflow-y-auto scroll-smooth">
-        <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Purchase History</h2>
+        <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">User Purchase History</h2>
         {userPurchases.length > 0 ? (userPurchases.map((purchase) => (
           <PurchaseCard purchase={purchase}/>
     ))) : 

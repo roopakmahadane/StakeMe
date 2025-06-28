@@ -112,7 +112,7 @@ export default function SocialGraph({ fid }) {
 
   const bubbles = placeCircles(bestFriends);
 
-  if(bubbles.length<10){
+  if(bubbles.length<5){
     return (
         <div className="bg-[#141414] rounded-2xl w-full p-4">
              <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Social Graph</h2>
