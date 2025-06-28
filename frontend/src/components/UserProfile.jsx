@@ -13,9 +13,12 @@ import SocialGraph from "./SocialGraph.jsx";
 import toast from "react-hot-toast";
 import { useNavigate } from 'react-router-dom';
 import Modal from "./Modal.jsx";
+import { useActiveAccount } from "thirdweb/react";
+import PurchaseCard from "./PurchaseCard.jsx";
 
 export default function UserProfile(){
    const {fid} = useParams();
+   const activeAccount = useActiveAccount();
    const navigate = useNavigate();
    const [user, setUser] = useState(null);
   const [tokenPriceInETH, setTokenPriceInETH] = useState(0);
@@ -25,6 +28,8 @@ export default function UserProfile(){
    const [tokenPrice, setTokenPrice] = useState(0);
   const [isModelOpen, setIsModalOpen] = useState(false);
   const [purchaseAmount, setPurchaseAmount] = useState(0);
+  const [userPurchases, setUserPurchases] = useState([]);
+  const [userAddress, setUserAddress] = useState("");
 
    useEffect(() => {
 
@@ -49,6 +54,7 @@ export default function UserProfile(){
           const userData = data["users"][0];
           console.log("userData in Userprofile",userData)
           console.log(userData.verified_addresses.eth_addresses[1])
+          setUserAddress(userData.verified_addresses.eth_addresses[1]);
           if (userData) {
             setUser(userData);
           } else {
@@ -78,8 +84,7 @@ export default function UserProfile(){
             CreatorFactory.abi,
             signer
           );
-          const address = user.verified_addresses.eth_addresses[1]
-          const tokenByCreator = await contract.getTokenByCreator(address);
+          const tokenByCreator = await contract.getTokenByCreator(userAddress);
           console.log("tokenByCreator",tokenByCreator);
           setTokenData(tokenByCreator);
           setTokenAvailable(true)
@@ -125,8 +130,7 @@ export default function UserProfile(){
             CreatorFactory.abi,
             signer
           );
-          const address = user.verified_addresses.eth_addresses[1]
-          const tokenData = await factory.getTokenByCreator(address);
+          const tokenData = await factory.getTokenByCreator(userAddress);
           const tokenAddress = tokenData.tokenAddress;
 
           const tokenContract = new ethers.Contract(
@@ -159,6 +163,65 @@ export default function UserProfile(){
 
    },[user])
 
+
+   useEffect(() => {
+    async function fetchPurchases() {
+      const factoryAddress =  import.meta.env.VITE_FACTORY_TOKEN;
+      const history = await getUserPurchaseHistory(factoryAddress, userAddress);
+      console.log("history",history)
+      setUserPurchases(history);
+    }
+  
+  fetchPurchases();
+  }, userAddress);
+
+
+
+  async function fetchTokenPurchaseEvents(provider, tokenAddress, userAddress) {
+    const token = new ethers.Contract(tokenAddress, CreatorToken.abi, provider);
+    console.log("token", token)
+    const filter = token.filters.TokenPurchased(userAddress);
+    const events = await token.queryFilter(filter, 0, "latest");
+    console.log("tokenpurchaseEvents", events)
+    // Get metadata
+    const name = await token.name();
+    const symbol = await token.symbol();
+  
+    return events.map(e => ({
+      tokenAddress,
+      name,
+      symbol,
+      amount: e.args.amount.toString(),
+      price: ethers.formatEther(e.args.pricePerToken),
+      timestamp: Number(e.args.timestamp),
+      txHash: e.transactionHash,
+    }));
+  }
+
+
+  async function getUserPurchaseHistory(factoryAddress, userAddress) {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const factory = new ethers.Contract(
+      factoryAddress,
+      CreatorFactory.abi,
+      provider
+    );
+  
+    const tokenAddresses = await factory.allTokens();
+    let allPurchases = [];
+  
+    for (const tokenAddr of tokenAddresses) {
+      try {
+        const tokenPurchases = await fetchTokenPurchaseEvents(provider, tokenAddr, userAddress);
+        allPurchases = allPurchases.concat(tokenPurchases);
+      } catch (err) {
+        console.error(`Failed to fetch for ${tokenAddr}`, err);
+      }
+    }
+  
+    return allPurchases.sort((a, b) => b.timestamp - a.timestamp);
+  }
+
     if (!user) {
          return (
            <div className="mx-30 my-10">
@@ -184,20 +247,22 @@ export default function UserProfile(){
         }
 
         const handlePurchase = async () => {
-          const url = 'https://fast-price-exchange-rates.p.rapidapi.com/api/v1/convert?amount=1&base_currency=USD&quote_currency=ETH';
+         // const url = 'https://fast-price-exchange-rates.p.rapidapi.com/api/v1/convert?amount=1&base_currency=USD&quote_currency=ETH';
+
+         const url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.min.json";
         
-          const options = {
-            method: 'GET',
-            headers: {
-              'x-rapidapi-key': import.meta.env.VITE_RAPID_API_KEY,
-              'x-rapidapi-host': 'fast-price-exchange-rates.p.rapidapi.com'
-            }
-          };
+          // const options = {
+          //   method: 'GET',
+          //   headers: {
+          //     'x-rapidapi-key': import.meta.env.VITE_RAPID_API_KEY,
+          //     'x-rapidapi-host': 'fast-price-exchange-rates.p.rapidapi.com'
+          //   }
+          // };
         
           try {
-            const response = await fetch(url, options);
+            const response = await fetch(url);
             const result = await response.json();
-            const ethPerUsd = result.to.ETH;
+            const ethPerUsd = result['usd'].eth;
         
             const ethAmount = (tokenPrice * ethPerUsd).toFixed(6);
         
@@ -372,9 +437,18 @@ export default function UserProfile(){
           </div>
         </div>
       </div>
-      <div>
-        <SocialGraph fid={fid}/>
-
+      <div className="flex gap-5">
+        <div className="w-2/3">
+        <SocialGraph fid={user.fid}/>
+        </div>
+        <div className="w-1/3 bg-[#141414] p-4 rounded-2xl">
+        <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Purchase History</h2>
+        {userPurchases.length> 0 ? (userPurchases.map((purchase) => (
+          <PurchaseCard purchase={purchase}/>
+    ))) : 
+    <p className="text-white bg-black p-5 rounded-2xl">No purchase found</p>
+    }
+    </div>
       </div>
     </div>
     

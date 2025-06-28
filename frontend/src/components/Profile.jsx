@@ -10,6 +10,7 @@ import CastCardLoader from "./CastCardLoader";
 import {MdChevronLeft} from 'react-icons/md';
 import {MdChevronRight} from 'react-icons/md';
 import SocialGraph from './SocialGraph';
+import PurchaseCard from "./PurchaseCard.jsx";
 
 
 export default function Profile(){
@@ -21,7 +22,7 @@ export default function Profile(){
     const [tokenData, setTokenData] = useState([]);
     const [casts, setCasts] = useState([]);
     const [tokenPrice, setTokenPrice] = useState(0);
-
+    const [userPurchases, setUserPurchases] = useState([]);
 
 
 
@@ -47,10 +48,7 @@ export default function Profile(){
             options
           );
           const data = await res.json();
-          console.log("Raw API response:", data);
           const userData = data[address][0];
-          console.log("userData in profile",userData)
-          console.log(userData)
           if (userData) {
             setUser(userData);
           } else {
@@ -76,7 +74,7 @@ export default function Profile(){
           );
     
           const tokenByCreator = await contract.getTokenByCreator(activeAccount?.address);
-          console.log(tokenByCreator);
+         
           setTokenData(tokenByCreator);
           setTokenAvailable(true)
 
@@ -153,7 +151,6 @@ export default function Profile(){
             supply: tokenSupply
           });
           setTokenPrice(priceOfToken)
-          console.log("Price of token:", priceOfToken);
         } catch (error) {
           console.error("Error fetching token price:", error);
         }
@@ -169,6 +166,7 @@ export default function Profile(){
     },[user])
 
     useEffect(() => {
+      console.log("fetchPurchases");
       async function fetchPurchases() {
         const factoryAddress =  import.meta.env.VITE_FACTORY_TOKEN;;
         const history = await getUserPurchaseHistory(factoryAddress, activeAccount?.address);
@@ -176,17 +174,17 @@ export default function Profile(){
         setUserPurchases(history);
       }
     
-      if (activeAccount?.address) fetchPurchases();
+    fetchPurchases();
     }, [activeAccount?.address]);
 
 
 
     async function fetchTokenPurchaseEvents(provider, tokenAddress, userAddress) {
-      const token = new ethers.Contract(tokenAddress, CreatorToken, provider);
-    
+      const token = new ethers.Contract(tokenAddress, CreatorToken.abi, provider);
+      console.log("token", token)
       const filter = token.filters.TokenPurchased(userAddress);
       const events = await token.queryFilter(filter, 0, "latest");
-    
+      console.log("tokenpurchaseEvents", events)
       // Get metadata
       const name = await token.name();
       const symbol = await token.symbol();
@@ -205,7 +203,11 @@ export default function Profile(){
 
     async function getUserPurchaseHistory(factoryAddress, userAddress) {
       const provider = new ethers.BrowserProvider(window.ethereum);
-      const factory = new ethers.Contract(factoryAddress, CreatorFactory, provider);
+      const factory = new ethers.Contract(
+        factoryAddress,
+        CreatorFactory.abi,
+        provider
+      );
     
       const tokenAddresses = await factory.allTokens();
       let allPurchases = [];
@@ -313,9 +315,19 @@ export default function Profile(){
       </div>
     </div>
   </div>
-  <div>
-    <SocialGraph fid={user.fid}/>
-  </div>
+  <div className="flex gap-5">
+        <div className="w-2/3">
+        <SocialGraph fid={user.fid}/>
+        </div>
+        <div className="w-1/3 bg-[#141414] p-4 rounded-2xl">
+        <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Purchase History</h2>
+        {userPurchases.length> 0 ? (userPurchases.map((purchase) => (
+          <PurchaseCard purchase={purchase}/>
+    ))) : 
+    <p className="text-white bg-black p-5 rounded-2xl">No purchase found</p>
+    }
+    </div>
+      </div>
 </div>
 
  )

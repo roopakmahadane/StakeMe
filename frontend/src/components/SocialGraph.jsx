@@ -114,7 +114,7 @@ export default function SocialGraph({ fid }) {
 
   if(bubbles.length<10){
     return (
-        <div className="bg-[#141414] rounded-2xl w-2/3 p-4">
+        <div className="bg-[#141414] rounded-2xl w-full p-4">
              <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Social Graph</h2>
              <div className="p-10 bg-black text-2xl max-w-2xl  border border-white/10 rounded-2xl">
              <h2>Social graph not available</h2>
@@ -125,7 +125,7 @@ export default function SocialGraph({ fid }) {
   }
 
   return (
-    <div className="bg-[#141414] rounded-2xl w-2/3 p-4 pb-10">
+    <div className="bg-[#141414] rounded-2xl w-full p-4 pb-10">
         <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Social Graph</h2>
         <div
       ref={containerRef}
