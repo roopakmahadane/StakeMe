@@ -54,9 +54,10 @@ export default function UserProfile(){
           const userData = data["users"][0];
           console.log("userData in Userprofile",userData)
           console.log(userData.verified_addresses.eth_addresses[1])
-          setUserAddress(userData.verified_addresses.eth_addresses[1]);
+         
           if (userData) {
             setUser(userData);
+            setUserAddress(userData.verified_addresses.eth_addresses[1]);
           } else {
             setUser(null);
             console.warn("No user found for address", address);
@@ -173,7 +174,7 @@ export default function UserProfile(){
     }
   
   fetchPurchases();
-  }, userAddress);
+  }, [userAddress]);
 
 
 
@@ -441,9 +442,9 @@ export default function UserProfile(){
         <div className="w-2/3">
         <SocialGraph fid={user.fid}/>
         </div>
-        <div className="w-1/3 bg-[#141414] p-4 rounded-2xl">
+        <div className="w-1/3 bg-[#141414]  p-4 rounded-2xl overflow-y-auto scroll-smooth">
         <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Purchase History</h2>
-        {userPurchases.length> 0 ? (userPurchases.map((purchase) => (
+        {userPurchases.length > 0 ? (userPurchases.map((purchase) => (
           <PurchaseCard purchase={purchase}/>
     ))) : 
     <p className="text-white bg-black p-5 rounded-2xl">No purchase found</p>

@@ -23,7 +23,7 @@ export default function Profile(){
     const [casts, setCasts] = useState([]);
     const [tokenPrice, setTokenPrice] = useState(0);
     const [userPurchases, setUserPurchases] = useState([]);
-
+    const [userAddress, setUserAddress] = useState("");
 
 
 
@@ -51,6 +51,7 @@ export default function Profile(){
           const userData = data[address][0];
           if (userData) {
             setUser(userData);
+            setUserAddress(userData.verified_addresses.eth_addresses[1]);
           } else {
             setUser(null);
             console.warn("No user found for address", address);
@@ -129,8 +130,7 @@ export default function Profile(){
             CreatorFactory.abi,
             signer
           );
-          const address = user.verified_addresses.eth_addresses[1]
-          const tokenData = await factory.getTokenByCreator(address);
+          const tokenData = await factory.getTokenByCreator(userAddress);
           const tokenAddress = tokenData.tokenAddress;
 
           const tokenContract = new ethers.Contract(
@@ -319,7 +319,7 @@ export default function Profile(){
         <div className="w-2/3">
         <SocialGraph fid={user.fid}/>
         </div>
-        <div className="w-1/3 bg-[#141414] p-4 rounded-2xl">
+        <div className="w-1/3 bg-[#141414] max-h-120 overflow-y-auto scroll-smooth p-4 rounded-2xl">
         <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Purchase History</h2>
         {userPurchases.length> 0 ? (userPurchases.map((purchase) => (
           <PurchaseCard purchase={purchase}/>
