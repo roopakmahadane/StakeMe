@@ -18,10 +18,8 @@ import UserProfileLoader from "./UserProfileLoader.jsx";
 
 export default function UserProfile(){
    const {fid} = useParams();
-   const activeAccount = useActiveAccount();
    const navigate = useNavigate();
    const [user, setUser] = useState(null);
-  const [tokenPriceInETH, setTokenPriceInETH] = useState(0);
    const [tokenAvailable, setTokenAvailable] = useState()
    const [tokenData, setTokenData] = useState([]);
    const [casts, setCasts] = useState([]);

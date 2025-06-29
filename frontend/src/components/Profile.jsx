@@ -6,7 +6,7 @@ import TokenCard from './TokenCard'
 import UserCastCard from './UserCastCard.jsx'
 import {calculateCreatorTokenPrice} from '../utils/calculateTokenPrice.js'
 import { useActiveAccount } from "thirdweb/react";
-
+import { Link } from "react-router-dom";
 import {MdChevronLeft} from 'react-icons/md';
 import {MdChevronRight} from 'react-icons/md';
 import SocialGraph from './SocialGraph';
@@ -25,14 +25,15 @@ export default function Profile(){
     const [tokenPrice, setTokenPrice] = useState(0);
     const [userPurchases, setUserPurchases] = useState([]);
     const [userAddress, setUserAddress] = useState("");
+    const [loading, setLoading] = useState();
+    const [profileAvailable, setProfileAvailable] = useState(false);
 
 
 
     useEffect(() => {
-    console.log("address", activeAccount?.address)
       async function fetchUser() {
         if (!activeAccount?.address) return;
-  
+        setLoading(true);
         const address = activeAccount.address.toLowerCase();
   
         const options = {
@@ -53,12 +54,16 @@ export default function Profile(){
           if (userData) {
             setUser(userData);
             setUserAddress(userData.verified_addresses.eth_addresses[1]);
+            setLoading(false);
+            setProfileAvailable(true);
           } else {
             setUser(null);
+            setLoading(false);
             console.warn("No user found for address", address);
           }
         } catch (err) {
           setUser(null);
+          setLoading(false);
           console.error("Error fetching user:", err);
         }
       }
@@ -94,7 +99,6 @@ export default function Profile(){
 
 
     useEffect(() => {
-      console.log("second useEffect", user)
       async function fetchUserCasts(){
         const options = {
           method: 'GET',
@@ -108,7 +112,6 @@ export default function Profile(){
           );
           const data = await res.json();
           const userCasts = data["casts"];
-          console.log(userCasts)
           if (userCasts) {
             setCasts(userCasts);
           } else {
@@ -228,10 +231,18 @@ export default function Profile(){
 
 
 
-    if (!user) {
+    if (loading) {
       return (
        <UserProfileLoader />
       );
+    }
+    if(!profileAvailable && !loading){
+      return (
+        <div className="p-5 w-fit md:mx-auto  mt-40 mx-5 rounded-2xl bg-[#1e1e1e] flex flex-col justify-center items-center  ">
+        <h1>No proflie found! Please veirfy your wallet address to view your profile</h1>
+        <Link target="_blank"  className="bg-black p-2 mt-5 transition hover:scale-105  hover:text-blue-400  rounded-2xl px-4 " to={'https://farcaster.xyz/~/settings/verified-addresses'}>Verify!</Link>
+        </div>
+      )
     }
 
     const sideLeft = () => {
