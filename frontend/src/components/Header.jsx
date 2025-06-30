@@ -58,7 +58,7 @@ const Header = () => {
       </Link>
 
       {/* Center: Search */}
-      <div className=" md:w-[40%] w-28">
+      <div className=" sm:w-lg w-28">
         <SearchBar />
       </div>
 

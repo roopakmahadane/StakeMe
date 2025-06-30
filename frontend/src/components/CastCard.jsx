@@ -37,7 +37,7 @@ export default function CastCard({cast}){
 
   
     return (
-      <div className="mx-2 w-70 md:mx-6 my-2 max-w-md md:min-w-md p-4 rounded-2xl shadow-lg bg-white dark:bg-black border border-[#333]">
+      <div className=" md:mx-6 my-2 min-w-xs max-w-md sm:min-w-md p-4 rounded-2xl shadow-lg bg-white dark:bg-black border border-[#333]">
         <div className="flex items-center mb-4">
           <img
             src={pfp_url}
