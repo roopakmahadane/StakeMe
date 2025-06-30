@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 export default function HowItWorksSection() {
   return (
-    <div className="bg-gradient-to-br from-[#141414] via-[#0f0f0f] to-[#1a1a1a] text-white py-16 px-6 md:px-16 rounded-3xl mx-4 md:mx-10 mt-12 shadow-2xl border border-[#2a2a2a]">
+    <div className="bg-gradient-to-br from-[#141414] via-[#0f0f0f] to-[#1a1a1a] text-white py-16 px-6 md:px-16 rounded-3xl mb-4 mx-4 md:mx-10 md:mt-12 mt-5 shadow-2xl border border-[#2a2a2a]">
       <h2 className="text-5xl  text-center mb-4 bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text tracking-wide animate-pulse duration-100">
         So... What’s This?
       </h2>

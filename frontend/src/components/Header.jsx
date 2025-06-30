@@ -45,11 +45,11 @@ const Header = () => {
     `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 
   return (
-    <div className="w-full px-6 py-4 flex justify-between items-center bg-black shadow-lg">
+    <div className="w-full px-2 py-2 md:px-6 md:py-4 flex justify-between items-center bg-black shadow-lg">
       {/* Left: Logo */}
       <Link to="/" className="flex items-center space-x-2">
         <img className="w-10 h-10" src="/logo.png" alt="StakeMe Logo" />
-        <div>
+        <div className="hidden md:block">
           <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text">
             StakeMe
           </h1>
@@ -58,12 +58,12 @@ const Header = () => {
       </Link>
 
       {/* Center: Search */}
-      <div className="w-[40%] max-w-md">
+      <div className=" md:w-[40%] w-28">
         <SearchBar />
       </div>
 
       {/* Right: Profile / Connect */}
-      <div className="flex items-center  gap-4">
+      <div className="flex items-center gap-4 scale-[0.50] sm:scale-100 origin-right max-w-[200px] overflow-hidden">
         {activeAccount ? (
           <button
             onClick={handleProfileClick}
@@ -99,7 +99,10 @@ const Header = () => {
             </div>
           </button>
         ) : (
+          <div className="">
           <ConnectButton client={thirdwebClient} wallets={[wallet]} />
+        </div>
+
         )}
       </div>
     </div>

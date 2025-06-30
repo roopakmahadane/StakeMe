@@ -8,10 +8,9 @@ export default function Home(){
 
 
     return (
-        <div className="flex">
-                  <TrendingCast />
+        <div className="flex flex-col lg:flex lg:flex-row">   
             <Info />
-      
+            <TrendingCast />
         </div>
     )
 }

@@ -40,12 +40,12 @@ export default function SearchBar(){
     
 
     return(
-        <div>
+        <div className='w-full'>
             <input 
             value={query}
             onChange={(e => setQuery(e.target.value))}
-            className='bg-[#1a1a1a] p-2 rounded-md min-w-sm border border-[#2a2a2a] '
-            placeholder='Search Farcaster users...'
+            className='bg-[#1a1a1a] md:p-2 p-1  text-sm md:text-base rounded-md border border-[#2a2a2a] '
+            placeholder='Search users...'
             />
             {suggestions.length>0 && 
             <ul className='absolute z-10 bg-[#1a1a1a] w-sm border border-gray-700 rounded-b-lg  pl-2'>
