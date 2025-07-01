@@ -49,7 +49,7 @@ const Header = () => {
       {/* Left: Logo */}
       <Link to="/" className="flex items-center space-x-2">
         <img className="w-10 h-10" src="/logo.png" alt="StakeMe Logo" />
-        <div className="hidden md:block">
+        <div className="hidden sm:block">
           <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text">
             StakeMe
           </h1>
@@ -58,12 +58,12 @@ const Header = () => {
       </Link>
 
       {/* Center: Search */}
-      <div className=" sm:w-lg w-28">
+      <div className="md:w-sm w-4xs">
         <SearchBar />
       </div>
 
       {/* Right: Profile / Connect */}
-      <div className="flex items-center gap-4 scale-[0.50] sm:scale-100 origin-right max-w-[200px] overflow-hidden">
+      <div className="flex items-center gap-4 scale-[0.50]  md:scale-100  max-w-[200px]">
         {activeAccount ? (
           <button
             onClick={handleProfileClick}
@@ -99,7 +99,7 @@ const Header = () => {
             </div>
           </button>
         ) : (
-          <div className="">
+          <div>
           <ConnectButton client={thirdwebClient} wallets={[wallet]} />
         </div>
 

@@ -319,11 +319,11 @@ export default function Profile(){
       </div>
     </div>
   </div>
-  <div className="flex gap-5">
-        <div className="w-2/3">
+  <div className="flex flex-col lg:flex-row  gap-5">
+        <div className="w-full hidden lg:block lg:w-2/3">
         <SocialGraph fid={user.fid}/>
         </div>
-        <div className="w-1/3 bg-[#141414] max-h-120 overflow-y-auto scroll-smooth p-4 rounded-2xl">
+        <div className="w-full lg:w-1/3 bg-[#141414] max-h-120 overflow-y-auto scroll-smooth p-4 rounded-2xl">
         <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Your Purchase History</h2>
         {userPurchases.length> 0 ? (userPurchases.map((purchase) => (
           <PurchaseCard purchase={purchase}/>

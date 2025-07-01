@@ -112,7 +112,7 @@ export default function SocialGraph({ fid }) {
 
   const bubbles = placeCircles(bestFriends);
 
-  if(bubbles.length<5){
+  if(bubbles.length<2){
     return (
         <div className="bg-[#141414] rounded-2xl w-full p-4">
              <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Social Graph</h2>
@@ -125,11 +125,11 @@ export default function SocialGraph({ fid }) {
   }
 
   return (
-    <div className="bg-[#141414] rounded-2xl w-full p-4 pb-10">
+    <div className="bg-[#141414]  rounded-2xl w-full p-4 pb-10">
         <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Social Graph</h2>
         <div
       ref={containerRef}
-      className="relative bg-black hidden md:block aspect-square mx-auto w-full max-w-2xl  border border-white/10 rounded-2xl overflow-hidden"
+      className="relative bg-black  aspect-square mx-auto w-full max-w-2xl  border border-white/10 rounded-2xl overflow-hidden"
     >
       {bubbles.map((friend, idx) => (
         <Link key={idx} to={`/account/${friend.fid}`}

@@ -44,7 +44,7 @@ export default function SearchBar(){
             <input 
             value={query}
             onChange={(e => setQuery(e.target.value))}
-            className='bg-[#1a1a1a] md:p-2 p-1  text-sm md:text-base rounded-md border border-[#2a2a2a] '
+            className='bg-[#1a1a1a] md:w-full md:p-2 p-1  text-sm md:text-base rounded-md border border-[#2a2a2a] '
             placeholder='Search users...'
             />
             {suggestions.length>0 && 

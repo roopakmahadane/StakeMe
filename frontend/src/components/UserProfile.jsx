@@ -405,7 +405,7 @@ export default function UserProfile(){
       {/* Cast Section */}
       <div className="bg-[#141414] rounded-2xl p-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold pl-2 text-white">Casts</h2>
+          <h2 className="text-2xl font-semibold  text-white">Casts</h2>
           <div className="flex">
             <div className="bg-[#272727] m-1 rounded-md hover:bg-gray-800">
               <MdChevronLeft onClick={sideLeft} size={30} className="text-gray-200 cursor-pointer" />
@@ -423,7 +423,7 @@ export default function UserProfile(){
           >
             {casts.length > 0 ? (
               casts.map((cast, i) => (
-                <div key={i} className="flex-shrink-0 w-[280px] sm:w-[300px] m-5 md:m-0 h-[280px]">
+                <div key={i} className="flex-shrink-0 w-[280px] sm:w-[300px] m-2  h-[280px]">
                   <UserCastCard cast={cast} />
                 </div>
               ))
@@ -433,11 +433,11 @@ export default function UserProfile(){
           </div>
         </div>
       </div>
-      <div className="flex gap-5">
-        <div className="w-2/3">
+      <div className="flex flex-col lg:flex-row gap-5">
+        <div className="w-full hidden lg:block lg:w-2/3">
         <SocialGraph fid={user.fid}/>
         </div>
-        <div className="w-1/3 bg-[#141414]  p-4 rounded-2xl overflow-y-auto scroll-smooth">
+        <div className="w-full lg:w-1/3 bg-[#141414]  p-4 rounded-2xl overflow-y-auto scroll-smooth">
         <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">User Purchase History</h2>
         {userPurchases.length > 0 ? (userPurchases.map((purchase) => (
           <PurchaseCard purchase={purchase}/>
