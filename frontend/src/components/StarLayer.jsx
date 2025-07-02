@@ -1,4 +1,6 @@
-export default function StarLayer(){
+import { memo } from "react";
+
+function StarLayer(){
     return(
 <div className="absolute inset-0 z-0 pointer-events-none">
   {Array.from({ length: 100 }).map((_, i) => (
@@ -18,3 +20,4 @@ export default function StarLayer(){
 
     )
 }
+export default memo(StarLayer);
