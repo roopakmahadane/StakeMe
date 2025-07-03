@@ -157,7 +157,7 @@ export default function Form() {
     <div className="flex items-center justify-center h-screen relative">
       <StarLayer key="constant-key"/>
       <Lottie animationData={launch} loop={true} className="h-40 md:h-60 md:mx-15 sm:block hidden lg:mx-30  lg:h-90 mb-4" />
-      <div className="flex flex-col items-center gap-6 p-6 bg-gradient-to-r from-pink-500 to-purple-600 md:w-3/6 w-full mx-8 sm:w-3/6 rounded-2xl lg:mr-40  bg-opacity-30 backdrop-blur-md">
+      <div className="flex flex-col items-center gap-6 p-6 bg-gradient-to-r from-pink-500 to-purple-600 xl:w-2/6 w-full mx-8 sm:w-3/6 rounded-2xl lg:mr-40  bg-opacity-30 backdrop-blur-md">
         <h1 className="text-3xl font-bold">Launch your Token</h1>
         <form
           onSubmit={handleSubmit}
