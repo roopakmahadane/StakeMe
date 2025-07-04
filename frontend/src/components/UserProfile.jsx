@@ -225,7 +225,7 @@ export default function UserProfile(){
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
             console.log("Frontend msg.sender will be:", await signer.getAddress());
-            const res = await fetch('http://localhost:3000/api/generate-signature', {
+            const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/generate-signature`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

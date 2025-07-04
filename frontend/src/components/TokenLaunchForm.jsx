@@ -76,7 +76,7 @@ export default function TokenLaunchForm() {
                 id: "verify-toast",
               });
 
-              const verifyRes = await fetch("http://localhost:3000/api/verify", {
+              const verifyRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/verify`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
