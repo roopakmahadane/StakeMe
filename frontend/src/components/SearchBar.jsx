@@ -21,11 +21,12 @@ export default function SearchBar(){
           const response = await fetch(`https://api.neynar.com/v2/farcaster/user/search/?limit=5&q=${query}`, options)
           const data = await response.json();
           setSuggestions(data.result.users || []);
-          setLoading(false)
-        console.log("query data in search bar", data.result.users.username);
+          setLoading(false);
 
-    }catch(err){
-        console.log(err);
+    }catch(err){    
+        if(import.meta.env.DEV) {
+        console.error("Error fetching user suggestions:", err);
+        }
     } finally {
         setLoading(false)
     }

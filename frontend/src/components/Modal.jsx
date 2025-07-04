@@ -5,7 +5,6 @@ export default function Modal({isOpen, onClose, children}){
     const modalRef = useRef(null);
     useEffect(() => {
         function handleClickOutside(event) {
-            console.log(event.target)
           if (modalRef.current && !modalRef.current.contains(event.target)) {
             onClose();
           }

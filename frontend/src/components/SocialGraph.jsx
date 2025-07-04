@@ -65,7 +65,9 @@ export default function SocialGraph({ fid }) {
           setBestFriends([]);
         }
       } catch (err) {
-        console.error("Error fetching best friends:", err);
+        if (import.meta.env.DEV) {
+          console.error("Error fetching best friends:", err);
+         }
       }
     }
 

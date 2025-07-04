@@ -16,183 +16,147 @@ import UserProfileLoader from "./UserProfileLoader.jsx";
 
 export default function MyProfile(){
    
-    const activeAccount = useActiveAccount();
-    const [user, setUser] = useState(null);
+  const activeAccount = useActiveAccount();
+  const [user, setUser] = useState(null);
+  const [tokenAvailable, setTokenAvailable] = useState();
+  const [tokenData, setTokenData] = useState([]);
+  const [casts, setCasts] = useState([]);
+  const [tokenPrice, setTokenPrice] = useState(0);
+  const [userPurchases, setUserPurchases] = useState([]);
+  const [userAddress, setUserAddress] = useState("");
+  const [loading, setLoading] = useState();
+  const [profileAvailable, setProfileAvailable] = useState(false);
 
-    const [tokenAvailable, setTokenAvailable] = useState()
-    const [tokenData, setTokenData] = useState([]);
-    const [casts, setCasts] = useState([]);
-    const [tokenPrice, setTokenPrice] = useState(0);
-    const [userPurchases, setUserPurchases] = useState([]);
-    const [userAddress, setUserAddress] = useState("");
-    const [loading, setLoading] = useState();
-    const [profileAvailable, setProfileAvailable] = useState(false);
+  useEffect(() => {
+    async function fetchUser() {
+      if (!activeAccount?.address) return;
+      setLoading(true);
+      const address = activeAccount.address.toLowerCase();
 
+      const options = {
+        method: "GET",
+        headers: {
+          "x-api-key": import.meta.env.VITE_NEYNAR_API_KEY,
+          "x-neynar-experimental": "false",
+        },
+      };
 
-
-    useEffect(() => {
-      async function fetchUser() {
-        if (!activeAccount?.address) return;
-        setLoading(true);
-        const address = activeAccount.address.toLowerCase();
-  
-        const options = {
-          method: "GET",
-          headers: {
-            "x-api-key":import.meta.env.VITE_NEYNAR_API_KEY,
-            "x-neynar-experimental": "false",
-          },
-        };
-  
-        try {
-          const res = await fetch(
-            `https://api.neynar.com/v2/farcaster/user/bulk-by-address?addresses=${address}`,
-            options
-          );
-          const data = await res.json();
-          const userData = data[address][0];
-          if (userData) {
-            setUser(userData);
-            setUserAddress(userData.verified_addresses.eth_addresses[1]);
-            setLoading(false);
-            setProfileAvailable(true);
-          } else {
-            setUser(null);
-            setLoading(false);
-            console.warn("No user found for address", address);
-          }
-        } catch (err) {
+      try {
+        const res = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk-by-address?addresses=${address}`, options);
+        const data = await res.json();
+        const userData = data[address]?.[0];
+        if (userData) {
+          setUser(userData);
+          setUserAddress(userData.verified_addresses.eth_addresses[1]);
+          setProfileAvailable(true);
+        } else {
           setUser(null);
-          setLoading(false);
-          console.error("Error fetching user:", err);
+          if (import.meta.env.DEV) console.warn("No user found for address", address);
         }
+      } catch (err) {
+        setUser(null);
+        if (import.meta.env.DEV) console.error("Error fetching user:", err);
+      } finally {
+        setLoading(false);
       }
-    
+    }
 
-      async function fetchTokenDetail() {
-        try {
-          const provider = new ethers.BrowserProvider(window.ethereum);
-          const signer = await provider.getSigner();
-          const factoryAddress = import.meta.env.VITE_FACTORY_TOKEN;
-          const contract = new ethers.Contract(
-            factoryAddress,
-            CreatorFactory.abi,
-            signer
-          );
-    
-          const tokenByCreator = await contract.getTokenByCreator(activeAccount?.address);
-         
-          setTokenData(tokenByCreator);
-          setTokenAvailable(true)
+    async function fetchTokenDetail() {
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const factoryAddress = import.meta.env.VITE_FACTORY_TOKEN;
+        const contract = new ethers.Contract(factoryAddress, CreatorFactory.abi, signer);
 
-        } catch (error) {
-          console.error("No token found or contract call failed:", error);
-          setTokenAvailable(false)
+        const tokenByCreator = await contract.getTokenByCreator(activeAccount?.address);
+        setTokenData(tokenByCreator);
+        setTokenAvailable(true);
+      } catch (error) {
+        setTokenAvailable(false);
+        if (import.meta.env.DEV) console.warn("No token found for this user (expected on first-time users)");
+      }
+    }
+
+    fetchUser();
+    fetchTokenDetail();
+  }, [activeAccount?.address]);
+
+  useEffect(() => {
+    async function fetchUserCasts() {
+      if (!user) return;
+
+      const options = {
+        method: "GET",
+        headers: {
+          "x-api-key": import.meta.env.VITE_NEYNAR_API_KEY,
+          "x-neynar-experimental": "false"
         }
+      };
+
+      try {
+        const res = await fetch(`https://api.neynar.com/v2/farcaster/feed/user/casts/?limit=25&include_replies=true&fid=${user.fid}`, options);
+        const data = await res.json();
+        const userCasts = data["casts"];
+        setCasts(userCasts || []);
+        if (!userCasts && import.meta.env.DEV) console.warn("No casts found for user.");
+      } catch (err) {
+        if (import.meta.env.DEV) console.error("Error fetching user casts:", err);
       }
+    }
 
-      fetchUser();
-      fetchTokenDetail();
-     
-      
-    },[activeAccount?.address])
+    async function fetchTokenPrice(user) {
+      if (!user) return;
 
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const factoryAddress = import.meta.env.VITE_FACTORY_TOKEN;
+        const factory = new ethers.Contract(factoryAddress, CreatorFactory.abi, signer);
 
-    useEffect(() => {
-      async function fetchUserCasts(){
-        const options = {
-          method: 'GET',
-          headers: {'x-api-key': import.meta.env.VITE_NEYNAR_API_KEY, 'x-neynar-experimental': 'false'}
-        };
-  
-        try {
-          const res = await fetch(
-            `https://api.neynar.com/v2/farcaster/feed/user/casts/?limit=25&include_replies=true&fid=${user.fid}`,
-            options
-          );
-          const data = await res.json();
-          const userCasts = data["casts"];
-          if (userCasts) {
-            setCasts(userCasts);
-          } else {
-            console.warn("No casts found");
-          }
-        } catch (err) {
-          console.error("Error fetching user:", err);
-        }
+        const tokenData = await factory.getTokenByCreator(userAddress);
+        const tokenAddress = tokenData.tokenAddress;
+
+        const tokenContract = new ethers.Contract(tokenAddress, CreatorToken.abi, signer);
+        const rawSupply = await tokenContract.totalSupply();
+        const tokenSupply = Number(ethers.formatUnits(rawSupply, 18));
+
+        const priceOfToken = calculateCreatorTokenPrice({
+          growthScore: user.score,
+          supply: tokenSupply
+        });
+
+        setTokenPrice(priceOfToken);
+      } catch (error) {
+        if (import.meta.env.DEV) console.warn("Token price fetch skipped. Token may not exist yet.");
       }
+    }
 
+    fetchUserCasts();
+    fetchTokenPrice(user);
+  }, [user]);
 
-
-      async function fetchTokenPrice(user) {
-        try {
-          const provider = new ethers.BrowserProvider(window.ethereum);
-          const signer = await provider.getSigner();
-          const factoryAddress = import.meta.env.VITE_FACTORY_TOKEN;
-          const factory = new ethers.Contract(
-            factoryAddress,
-            CreatorFactory.abi,
-            signer
-          );
-          const tokenData = await factory.getTokenByCreator(userAddress);
-          const tokenAddress = tokenData.tokenAddress;
-
-          const tokenContract = new ethers.Contract(
-      tokenAddress,
-      CreatorToken.abi,
-      signer
-    );    
-      
-          // Step 3: Call totalSupply()
-          const rawSupply = await tokenContract.totalSupply();
-          const tokenSupply = Number(ethers.formatUnits(rawSupply, 18));
-
-          // Step 4: Calculate price using your utility
-          console.log("supply",rawSupply )
-          console.log("score",user.score)
-          const priceOfToken = calculateCreatorTokenPrice({
-            growthScore: user.score,
-            supply: tokenSupply
-          });
-          setTokenPrice(priceOfToken)
-        } catch (error) {
-          console.error("Error fetching token price:", error);
-        }
-      }
-
-
-
-
-      fetchTokenPrice(user);
-      fetchUserCasts();
-
-
-    },[user])
-
-    useEffect(() => {
-      console.log("fetchPurchases");
-      async function fetchPurchases() {
-        const factoryAddress =  import.meta.env.VITE_FACTORY_TOKEN;;
+  useEffect(() => {
+    async function fetchPurchases() {
+      try {
+        const factoryAddress = import.meta.env.VITE_FACTORY_TOKEN;
         const history = await getUserPurchaseHistory(factoryAddress, activeAccount?.address);
-        console.log("history",history)
         setUserPurchases(history);
+      } catch (err) {
+        if (import.meta.env.DEV) console.error("Error fetching purchase history:", err);
       }
-    
-    fetchPurchases();
-    }, [activeAccount?.address]);
+    }
 
+    if (activeAccount?.address) fetchPurchases();
+  }, [activeAccount?.address]);
 
-
-    async function fetchTokenPurchaseEvents(provider, tokenAddress, userAddress) {
+  async function fetchTokenPurchaseEvents(provider, tokenAddress, userAddress) {
+    try {
       const token = new ethers.Contract(tokenAddress, CreatorToken.abi, provider);
-      console.log("token", token)
       const filter = token.filters.TokenPurchased(userAddress);
       const events = await token.queryFilter(filter, 0, "latest");
-      console.log("tokenpurchaseEvents", events)
-      // Get metadata
       const name = await token.name();
       const symbol = await token.symbol();
-    
+
       return events.map(e => ({
         tokenAddress,
         name,
@@ -202,32 +166,25 @@ export default function MyProfile(){
         timestamp: Number(e.args.timestamp),
         txHash: e.transactionHash,
       }));
+    } catch (err) {
+      if (import.meta.env.DEV) console.warn(`TokenPurchase event fetch failed for ${tokenAddress}`);
+      return [];
+    }
+  }
+
+  async function getUserPurchaseHistory(factoryAddress, userAddress) {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const factory = new ethers.Contract(factoryAddress, CreatorFactory.abi, provider);
+    const tokenAddresses = await factory.allTokens();
+
+    let allPurchases = [];
+    for (const tokenAddr of tokenAddresses) {
+      const tokenPurchases = await fetchTokenPurchaseEvents(provider, tokenAddr, userAddress);
+      allPurchases = allPurchases.concat(tokenPurchases);
     }
 
-
-    async function getUserPurchaseHistory(factoryAddress, userAddress) {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const factory = new ethers.Contract(
-        factoryAddress,
-        CreatorFactory.abi,
-        provider
-      );
-    
-      const tokenAddresses = await factory.allTokens();
-      let allPurchases = [];
-    
-      for (const tokenAddr of tokenAddresses) {
-        try {
-          const tokenPurchases = await fetchTokenPurchaseEvents(provider, tokenAddr, userAddress);
-          allPurchases = allPurchases.concat(tokenPurchases);
-        } catch (err) {
-          console.error(`Failed to fetch for ${tokenAddr}`, err);
-        }
-      }
-    
-      return allPurchases.sort((a, b) => b.timestamp - a.timestamp);
-    }
-    
+    return allPurchases.sort((a, b) => b.timestamp - a.timestamp);
+  }
 
 
 
@@ -325,8 +282,8 @@ export default function MyProfile(){
         </div>
         <div className="w-full lg:w-1/3 bg-[#141414] max-h-120 overflow-y-auto scroll-smooth p-4 rounded-2xl">
         <h2 className="text-2xl mx-auto font-semibold my-5 pl-2 text-white">Your Purchase History</h2>
-        {userPurchases.length> 0 ? (userPurchases.map((purchase) => (
-          <PurchaseCard purchase={purchase}/>
+        {userPurchases.length> 0 ? (userPurchases.map((purchase,i) => (
+          <PurchaseCard key={i} purchase={purchase}/>
     ))) : 
     <p className="text-white bg-black p-5 rounded-2xl">No purchase found</p>
     }

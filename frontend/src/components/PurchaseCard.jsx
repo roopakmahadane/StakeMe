@@ -15,9 +15,10 @@ try {
 	const response = await fetch(url);
 	const result = await response.json();
     setEthToUsd(result['eth'].usd);
-	console.log(result['eth'].usd);
 } catch (error) {
-	console.error(error);
+  if(import.meta.env.DEV) {
+    console.error("Error fetching ETH to USD conversion rate:", error);
+  }
 }
         }
         convertETHToUSD();
