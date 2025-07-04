@@ -31,11 +31,10 @@ app.post("/api/generate-signature", async (req, res) => {
     );
 
     const signature = await signer.signMessage(ethers.toBeArray(messageHash));
-    console.log("signature", res.json({ signature }));
-    res.json({ signature });
+    return res.json({ signature });
   } catch (error) {
     console.error("Signature error:", error);
-    res.status(500).json({ error: "Failed to generate signature" });
+   return res.status(500).json({ error: "Failed to generate signature" });
   }
 });
 
@@ -47,7 +46,6 @@ app.post("/api/verify", async (req, res) => {
   ).join(" ");
   
   const cmd = `npx hardhat verify --network sepolia ${address} ${argsString}`;
-  console.log("Running:", cmd);
   exec(cmd, (err, stdout, stderr) => {
     if (err) {
       console.error("Verification error:", stderr);

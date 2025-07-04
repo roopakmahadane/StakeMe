@@ -2,10 +2,10 @@ import { useState } from 'react'
 import './App.css'
 import Layout from './Layout'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Form from './components/Form'
+import TokenLaunchForm from './components/TokenLaunchForm'
 import {Toaster} from 'react-hot-toast'
 
-import Profile from './components/Profile';
+import MyProfile from './components/MyProfile'
 import Home from './components/Home';
 import UserProfile from './components/UserProfile'
 
@@ -20,10 +20,10 @@ function App() {
         {path: "", element: <Home />,
           errorElement: <div>Page Not found</div>
         },
-        {path: "profile", element: <Profile />,
+        {path: "profile", element: <MyProfile />,
           errorElement: <div>Page Not found</div>
         },
-        {path: "createToken", element: <Form />,
+        {path: "createToken", element: <TokenLaunchForm />,
           errorElement: <div>Page Not found</div>
         },
         {path: "account/:fid", element: <UserProfile />,
