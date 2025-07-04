@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import {ethers} from "ethers"
-import CreatorFactory from "../../../artifacts/contracts/CreatorFactory.sol/CreatorFactory.json"
-import CreatorToken from "../../../artifacts/contracts/CreatorToken.sol/CreatorToken.json" 
+// import CreatorFactory from "../../../artifacts/contracts/CreatorFactory.sol/CreatorFactory.json"
+// import CreatorToken from "../../../artifacts/contracts/CreatorToken.sol/CreatorToken.json" 
+import CreatorFactory from "../../src/constants/CreatorFactory.json";
+import CreatorToken from "../../src/constants/CreatorToken.json";
 import TokenCard from './TokenCard.jsx'
 import UserCastCard from './UserCastCard.jsx'
 import {calculateCreatorTokenPrice} from '../utils/calculateTokenPrice.js'

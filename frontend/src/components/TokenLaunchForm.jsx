@@ -3,7 +3,7 @@ import launch from "../lotties/launch.json";
 import Lottie from "lottie-react";
 import StarLayer from "./StarLayer";
 import { ethers } from "ethers";
-import CreatorFactory from "../../../artifacts/contracts/CreatorFactory.sol/CreatorFactory.json";
+import CreatorFactory from "../../src/constants/CreatorFactory.json";
 import { useActiveAccount } from "thirdweb/react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
